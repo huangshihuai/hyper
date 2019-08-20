@@ -48,11 +48,11 @@ rebuild()
     _remake
 }
 
-if [ "$cmd" == "clear" ]; then
+if [ "$cmd" = "clear" ]; then
     clear
-elif [ "$cmd" == "build" ]; then
+elif [ "$cmd" = "build" ]; then
     rebuild
-elif [ "$cmd" == "remake" ]; then
+elif [ "$cmd" = "remake" ]; then
     _remake
 else
     echo "cmd in clear or build"

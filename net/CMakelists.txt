@@ -1,3 +1,5 @@
-aux_source_directory(. DIR_LIB_SRCS)
-# 生成链接库
-add_library (Net ${DIR_LIB_SRCS})
+add_subdirectory(tcp)
+
+aux_source_directory(. HYPER_NET_SOURCE)
+add_library(hypernet ${HYPER_NET_SOURCE})
+target_link_libraries(hypernet hypernettcp)

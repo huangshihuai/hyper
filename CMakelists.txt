@@ -15,10 +15,13 @@ endif()
 
 include_directories(".")
 
-aux_source_directory(. DIR_SRCS)
-
-# 添加 math 子目录
 add_subdirectory(net)
+add_subdirectory(protocols)
 
+aux_source_directory(. HYPER_SOURCE)
+add_executable(hyper ${HYPER_SOURCE})
 
-add_library(hyper Net)
+target_link_libraries(hyper hypernet hyperportocols)
+TARGET_LINK_LIBRARIES(hyper pthread)
+
+#add_library(hyper NET_SOURCE)

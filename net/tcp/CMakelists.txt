@@ -1,0 +1,2 @@
+aux_source_directory(. HYPER_NET_TCP_SOURCE)
+add_library(hypernettcp ${HYPER_NET_TCP_SOURCE})

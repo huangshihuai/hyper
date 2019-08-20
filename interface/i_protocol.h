@@ -4,9 +4,9 @@
 namespace hyper {
 namespace interface {
 
-enum NetProtocol {
-    STREAM,
+enum ENetProtocol {
     CUSTOM,
+    STREAM,
 };
 
 class IProtocol {

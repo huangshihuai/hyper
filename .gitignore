@@ -33,3 +33,6 @@
 
 # Hyper Module
 .build
+
+# Ide Module
+.vscode/

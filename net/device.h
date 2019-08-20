@@ -11,6 +11,7 @@
 namespace hyper {
 namespace net {
 using namespace hyper::base;
+using namespace hyper::interface;
 
 class Device : public IDevice {
 public:
