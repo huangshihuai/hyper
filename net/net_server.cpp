@@ -28,7 +28,7 @@ namespace tcp {
         if (nullptr == m_eventLoopThreadPoll) {
             return false;
         }
-        return true;
+        return m_eventLoopThreadPoll->init();
     }
 
     void NetServer::waitQuit() {
