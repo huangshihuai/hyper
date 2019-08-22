@@ -11,7 +11,6 @@ public:
     virtual ~IEventLoop() {}
     virtual bool init() = 0;
     virtual uint32 loop() = 0;
-    virtual void addEvent() = 0;
 };
 }
 }
