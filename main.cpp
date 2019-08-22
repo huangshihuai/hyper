@@ -56,7 +56,8 @@ int main(void) {
     std::shared_ptr<INetServer> netServer = std::make_shared<NetServer>();
     netServer->setOptional(optional);
     netServer->addServer(echoServer);
-    netServer->start();
-    netServer->waitQuit();
+    if (netServer->start()) {
+        netServer->waitQuit();
+    }
     return 0;
 }

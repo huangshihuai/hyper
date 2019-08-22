@@ -1,5 +1,7 @@
 add_subdirectory(tcp)
 
+add_subdirectory(poll)
+
 aux_source_directory(. HYPER_NET_SOURCE)
 add_library(hypernet ${HYPER_NET_SOURCE})
-target_link_libraries(hypernet hypernettcp)
+target_link_libraries(hypernet hypernetpoll)

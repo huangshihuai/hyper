@@ -1,6 +1,7 @@
 #ifndef HYPER_INTERFACE_I_NET_SERVER_H
 #define HYPER_INTERFACE_I_NET_SERVER_H
 #include "interface/i_server.h"
+#include <memory>
 
 namespace hyper {
 namespace interface {

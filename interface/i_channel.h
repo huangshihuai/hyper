@@ -4,6 +4,7 @@ namespace hyper {
 namespace interface {
 class IChannel {
 public:
+    IChannel() { };
     virtual ~IChannel() = 0;
 };
 }

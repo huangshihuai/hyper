@@ -3,6 +3,7 @@
 #include <thread>
 
 #include "net_server.h"
+#include "net/event_loop_thread_poll.h"
 
 namespace hyper {
 namespace net {
@@ -19,32 +20,26 @@ namespace tcp {
             return false;
         }
 
-        return m_eventLoopPoll->init();
+        return m_eventLoopThreadPoll->start();
     }
 
     bool NetServer::init() {
-        m_eventLoopPoll = std::make_shared<EventLoopPoll>(m_optional->getThreadNumber());
-        if (nullptr == m_eventLoopPoll) {
+        m_eventLoopThreadPoll = std::make_shared<EventLoopThreadPoll>(m_optional->getThreadNumber());
+        if (nullptr == m_eventLoopThreadPoll) {
             return false;
         }
         return true;
     }
 
     void NetServer::waitQuit() {
-        uint32  i = 0;
+        int i = 0;
         do {
-            auto brigingList = m_server->getBriging();
-            std::for_each(brigingList.begin(), brigingList.end(), 
-                    [](std::map<std::string, std::function<void (std::string, std::string)>>::reference a) {
-                        auto func  = a.second;
-                        func(a.first, "waitQuit");
-            });
-            std::cout << m_optional << std::endl;
-            if (i++ == 5) {
-                m_eventLoopPoll->quit();
+            // wait signal
+            if (i++ >= 5) {
+                m_eventLoopThreadPoll->quit();
                 break;
             }
-            std::this_thread::sleep_for(std::chrono::seconds(2));
+            std::this_thread::sleep_for(std::chrono::seconds(5));
         } while (true);
         return;
     }

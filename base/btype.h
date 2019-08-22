@@ -22,6 +22,7 @@ namespace base {
     typedef	int8_t		        sint8;
     typedef	int8_t		        int8;
     typedef	int	                SOCKET;
+    typedef int                 EPOLL;
 #else
     typedef unsigned long long  uint64;
     typedef long long           sint64;
@@ -37,6 +38,7 @@ namespace base {
     typedef char                sint8;
     typedef char                int8;
     typedef	int	                SOCKET;
+    typedef int                 EPOLL;
 #endif
 }
 }

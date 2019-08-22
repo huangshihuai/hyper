@@ -2,11 +2,10 @@
 #define HYPER_INTERFACE_I_OPTIONAL_H
 #include <ostream>
 #include <memory>
-
+#include "base/e_net_model.h"
 #include "base/btype.h"
 #include "interface/i_protocol.h"
 #include "interface/i_net_server.h"
-
 namespace hyper {
 namespace interface {
 
@@ -25,8 +24,19 @@ public:
     virtual void serKeepAlive(bool on) = 0;
     virtual void setSingle(bool on) = 0;
     virtual void setThreadNumber(uint32 threadNumber) = 0;
+    virtual void setPort(uint32 port) = 0;
+    virtual void setNetModel(ENetModel netModel) = 0;
 
+    // virtual void getProtocol() const = 0;
+    virtual ENetServer getServerType() const = 0;
+    virtual bool getTcpNoDelay() const = 0;
+    virtual bool getReuseAddr() const = 0;
+    virtual bool getReusePort() const = 0;
+    virtual bool getKeepAlive() const = 0;
+    virtual bool getSingle() const = 0;
     virtual uint32 getThreadNumber() const = 0;
+    virtual uint32 getPort() const = 0;
+    virtual ENetModel getNetModel() const = 0;
 
     virtual std::string getStrProtocol() const = 0;
     virtual std::string getStrTcpNoDelay() const = 0;
@@ -36,6 +46,7 @@ public:
     virtual std::string getStrSingle() const = 0;
     virtual std::string getStrServerType() const = 0;
     virtual std::string getStrThreadNumber() const = 0;
+    virtual std::string getStrPort() const = 0;
 
     friend std::ostream &operator<<(std::ostream &out, const IOptional &optional) {
         return out << "m_netProtocol:" << optional.getStrProtocol() << ","

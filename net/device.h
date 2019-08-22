@@ -1,5 +1,6 @@
 #ifndef HYPER_NET_DEVICE_H
 #define HYPER_NET_DEVICE_H
+/*
 #include <unistd.h>
 #include <sys/socket.h>
 #include <string>
@@ -56,4 +57,5 @@ private:
 };
 }
 }
+*/
 #endif // HYPER_NET_DEVICE_H

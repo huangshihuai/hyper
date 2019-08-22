@@ -24,7 +24,18 @@ public:
     inline void setSingle(bool on) override { m_single = on; };
     inline void setServerType(ENetServer serverType) override { m_serverType = serverType; };
     inline void setThreadNumber(uint32 threadNumber) override { m_threadNumber = threadNumber; };
-    inline uint32 getThreadNumber() const override { return m_threadNumber; };
+    inline void setPort(uint32 port) override { m_port = port; };
+    inline void setNetModel(ENetModel netModel = ENetModel::KERNEL_DISPATCH) { m_netModel = netModel; };
+
+    ENetServer getServerType() const override { return m_serverType; };
+    bool getTcpNoDelay() const override { return m_tcpNoDelay; };
+    bool getReuseAddr() const override { return m_reuseAddr; };
+    bool getReusePort() const override { return m_reusePort; };
+    bool getKeepAlive() const override { return m_keepAlive; };
+    bool getSingle() const override { return m_single; };
+    uint32 getThreadNumber() const override { return m_threadNumber; };
+    uint32 getPort() const override { return m_port; };
+    ENetModel getNetModel() const override { return m_netModel; };
 
     std::string getStrProtocol() const override { return "netProtocol"; };
     std::string getStrTcpNoDelay() const override { return m_tcpNoDelay ? "TRUE" : "FALSE"; };
@@ -34,6 +45,7 @@ public:
     std::string getStrSingle() const override { return m_single ? "TRUE" : "FALSE"; };
     std::string getStrServerType() const override { return m_serverType == ENetServer::TCP ? "TCP" : "UDP"; };
     std::string getStrThreadNumber() const override { std::stringstream ss; ss << m_threadNumber; return ss.str(); };
+    std::string getStrPort() const override { std::stringstream ss; ss << m_port; return ss.str(); };
     
     friend std::ostream &operator<<(std::ostream &out, const Optional &optional);
     friend std::ostream &operator<<(std::ostream &out, const std::shared_ptr<Optional> optional);
@@ -47,6 +59,8 @@ private:
     bool m_keepAlive;
     bool m_single;
     uint32 m_threadNumber;
+    uint32 m_port;
+    ENetModel m_netModel;
 };
 }
 }

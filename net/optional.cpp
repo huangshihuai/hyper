@@ -21,12 +21,7 @@ std::ostream &operator<<(std::ostream &out, const Optional &optional) {
 }
 
 std::ostream &operator<<(std::ostream &out, const std::shared_ptr<Optional> optional) {
-    return out << "m_netProtocol:" << optional->getStrProtocol() << ","
-                << "m_tcpNoDelay:" << optional->getStrTcpNoDelay() << ","
-                << "m_reuseAddr:" << optional->getStrReuseAddr() << ","
-                << "m_reusePort:" << optional->getStrReusePort() << ","
-                << "m_keepAlive:" << optional->getStrKeepAlive() << ","
-                << "m_single:" << optional->getStrSingle();
+    return out << *optional;
 }
 
 }
