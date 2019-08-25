@@ -17,5 +17,14 @@ EventLoop::~EventLoop() {
 uint32 EventLoop::loop() {
     return m_eventEpoll->poll(2000);
 }
+
+void EventLoop::addEvent() {
+
+}
+void EventLoop::setNotification(IChannel* channel) {
+    m_eventEpoll->addEvent(channel);
 }
 }
+}
+
+

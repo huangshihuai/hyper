@@ -6,7 +6,6 @@
 #include "net/net_server.h"
 #include <unistd.h>
 using namespace hyper::net;
-using namespace hyper::net::tcp;
 using namespace hyper::interface;
 
 class Custom : public hyper::interface::IProtocol {
@@ -51,6 +50,8 @@ int main(void) {
     std::shared_ptr<IOptional> optional = std::make_shared<Optional>();
     optional->setProtocol(custom);
     optional->setThreadNumber(3);
+    optional->setIp("0.0.0.0");
+    optional->setPort(2375);
 
     std::shared_ptr<IServer> echoServer = std::make_shared<echoServerImpl>();
     std::shared_ptr<INetServer> netServer = std::make_shared<NetServer>();

@@ -13,7 +13,7 @@ else()
     message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 endif()
 
-set(CMAKE_CXX_FLAGS, "${CMAKE_CXX_FLAGS} -O0 -g#")
+set(CMAKE_CXX_FLAGS, "${CMAKE_CXX_FLAGS} -O0 -g0")
 
 include_directories(".")
 
@@ -21,9 +21,13 @@ add_subdirectory(net)
 add_subdirectory(protocols)
 
 aux_source_directory(. HYPER_SOURCE)
-add_executable(hyper ${HYPER_SOURCE})
 
+add_executable(hyper ${HYPER_SOURCE})
 target_link_libraries(hyper hypernet hyperportocols)
 TARGET_LINK_LIBRARIES(hyper pthread)
+
+add_executable(client "example/client.cpp")
+target_link_libraries(client hypernet hyperportocols)
+TARGET_LINK_LIBRARIES(client pthread)
 
 #add_library(hyper NET_SOURCE)

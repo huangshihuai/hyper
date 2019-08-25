@@ -1,6 +1,8 @@
+#include <memory>
 #include "interface/i_event_loop.h"
 #include "net/poll/event_epoll.h"
-#include <memory>
+#include "interface/i_device.h"
+#include "interface/i_channel.h"
 
 namespace hyper {
 namespace net {
@@ -14,6 +16,8 @@ public:
     virtual ~EventLoop();
     bool init() override;
     uint32 loop() override;
+    void addEvent() override;
+    void setNotification(IChannel* channel) override;
 private:
     std::shared_ptr<IPoll> m_eventEpoll;
 };

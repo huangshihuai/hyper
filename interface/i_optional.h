@@ -3,6 +3,7 @@
 #include <ostream>
 #include <memory>
 #include "base/e_net_model.h"
+#include "base/e_socket_model.h"
 #include "base/btype.h"
 #include "interface/i_protocol.h"
 #include "interface/i_net_server.h"
@@ -16,7 +17,7 @@ public:
     IOptional() {}
     virtual ~IOptional() {}
     virtual void setProtocol(ENetProtocol netProtocolType) = 0;
-    virtual void setServerType(ENetServer serverType) = 0;
+    virtual void setServerType(ESocketModel serverType) = 0;
     virtual void setProtocol(std::shared_ptr<IProtocol> netProtocol) = 0;
     virtual void setTcpNoDelay(bool on) = 0;
     virtual void setReuseAddr(bool on) = 0;
@@ -25,10 +26,11 @@ public:
     virtual void setSingle(bool on) = 0;
     virtual void setThreadNumber(uint32 threadNumber) = 0;
     virtual void setPort(uint32 port) = 0;
+    virtual void setIp(const std::string &ip) = 0;
     virtual void setNetModel(ENetModel netModel) = 0;
 
     // virtual void getProtocol() const = 0;
-    virtual ENetServer getServerType() const = 0;
+    virtual ESocketModel getServerType() const = 0;
     virtual bool getTcpNoDelay() const = 0;
     virtual bool getReuseAddr() const = 0;
     virtual bool getReusePort() const = 0;
@@ -36,6 +38,7 @@ public:
     virtual bool getSingle() const = 0;
     virtual uint32 getThreadNumber() const = 0;
     virtual uint32 getPort() const = 0;
+    virtual const std::string getIp() const = 0;
     virtual ENetModel getNetModel() const = 0;
 
     virtual std::string getStrProtocol() const = 0;

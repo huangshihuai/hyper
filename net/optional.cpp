@@ -2,7 +2,7 @@
 
 namespace hyper {
 namespace net {
-Optional::Optional() : m_netProtocolType(ENetProtocol::STREAM), m_serverType(ENetServer::TCP),
+Optional::Optional() : m_netProtocolType(ENetProtocol::STREAM), m_serverType(ESocketModel::TCP),
                         m_netProtocol(nullptr), m_tcpNoDelay(true), m_reuseAddr(true),
                         m_reusePort(true), m_keepAlive(true), m_single(true) {
 }

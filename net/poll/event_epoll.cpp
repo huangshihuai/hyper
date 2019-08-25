@@ -1,6 +1,9 @@
 #include "net/poll/event_epoll.h"
 #include "base/macro.h"
 #include <iostream>
+#include <cassert>
+#include <errno.h>
+#include <string.h>
 
 namespace hyper {
 namespace net {
@@ -20,11 +23,33 @@ bool EventEpoll::init() {
 
 uint32 EventEpoll::poll(uint32 timeout/*, std::vector<IChannel> &channelList*/) {
     int size = epoll_wait(m_epollFd, &(*m_eventList.begin()), m_eventList.size(), timeout);
-    std::cout << "EventEpoll::poll fd: " << m_epollFd << ", size: " << size << std::endl;
+    for (auto index = 0; index < size; ++index) {
+        auto channel = static_cast<IChannel *>(m_eventList[index].data.ptr);
+        channel->onEvents(this);
+    }
     return 0;
 }
 
-void EventEpoll::addEvent() {
+int32 EventEpoll::addEvent(IChannel* channel) {
+    std::cout << "add event\n";
+    assert(channel != nullptr);
+    struct epoll_event ev;
+    auto events = channel->getEvents();
+    if(events & READ_EVENT){
+        ev.events |= EPOLLIN;
+    }
+    if(events & WRITE_EVENT){
+        ev.events |= EPOLLOUT;
+    }
+    ev.data.ptr = static_cast<void *>(channel);
+    auto ret = epoll_ctl(m_epollFd, EPOLL_CTL_ADD, channel->getFd(), &ev);
+    if(ret >= 0) {
+        std::cout << "epoll_ctl success\n";
+    } else {
+        std::cout << "epoll_ctl failed, strerrno: " << strerror(errno) << std::endl;
+        // error 
+    }
+    return	ret;  
 }
 void EventEpoll::updateEvent() {
 }

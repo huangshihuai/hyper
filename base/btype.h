@@ -1,5 +1,5 @@
-#ifndef HYPER_BTYPE_H
-#define HYPER_BTYPE_H
+#ifndef HYPER_BASE_BTYPE_H
+#define HYPER_BASE_BTYPE_H
 
 #ifdef __linux
 #include <sys/types.h>
@@ -42,4 +42,4 @@ namespace base {
 #endif
 }
 }
-#endif // HYPER_BTYPE_H
+#endif // HYPER_BASE_BTYPE_H

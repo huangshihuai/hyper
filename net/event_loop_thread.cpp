@@ -1,6 +1,7 @@
+#include <iostream>
+#include <cassert>
 #include "event_loop_thread.h"
 #include "base/macro.h"
-#include <iostream>
 
 namespace hyper {
 namespace net {
@@ -10,7 +11,7 @@ EventLoopThread::EventLoopThread() {
 }
 
 bool EventLoopThread::start() {
-    HYPER_COMPARE(this->init(), 0, !=, return false, "EventLoopThread start failed");
+    // HYPER_COMPARE(this->init(), 0, !=, return false, "EventLoopThread start failed");
     m_thread = std::thread(&EventLoopThread::loop, this);
     return true;
 }
@@ -26,6 +27,10 @@ int EventLoopThread::init() {
     HYPER_COMPARE(m_eventLoop, nullptr, ==, return 1, "EventLoopThread make failed");
     HYPER_COMPARE(m_eventLoop->init(), true, !=, return 1, "EventLoopThread init failed");
     return 0;
+}
+
+inline void EventLoopThread::setNotification(IChannel* channel) {
+    m_eventLoop->setNotification(channel);
 }
 
 void EventLoopThread::quit() {
