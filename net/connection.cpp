@@ -24,6 +24,7 @@ void Connection::onEvents(IChannel *channel) {
     } else if (event & WRITE_EVENT) {
         // Wriet 
         int32 size = m_socket->write("hello");
+        std::cout << "write size: " << size << std::endl;
         return;
     } else {
         // error

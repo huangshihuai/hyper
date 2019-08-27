@@ -35,7 +35,6 @@ public:
     inline void setSocket(std::shared_ptr<ISocket> socket) override { m_socket = socket; };
     bool startListen() override;
 public:
-#pragma mark - the IConnection
     void onEvents(IChannel *channel) override;
     
     void onRequest(const std::string &onRequestData, std::string &onResponseData) override { };

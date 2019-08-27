@@ -48,7 +48,6 @@ namespace net {
     }
 
     void NetServer::waitQuit() {
-        int i = 0;
         do {
             // wait signal
             std::this_thread::sleep_for(std::chrono::seconds(5));
