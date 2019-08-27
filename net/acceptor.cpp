@@ -1,7 +1,10 @@
 #include "acceptor.h"
 #include "net/socket.h"
 #include "base/macro.h"
+#include "sys/epoll.h"
+#include "net/channel.h"
 #include <memory>
+#include <thread>
 
 namespace hyper {
 namespace net {
@@ -20,6 +23,26 @@ Acceptor::Acceptor(const std::shared_ptr<IOptional> optional) {
 Acceptor::~Acceptor() {
 }
 
+void Acceptor::onEvents(IChannel *channel) {
+    do {
+        auto fd = m_socket->accept();
+        if (fd == nullptr) {
+            if (errno != EAGAIN && errno != EWOULDBLOCK) {
+            }
+            return;
+        } else {
+            std::cout << std::this_thread::get_id() << " accept success: " << fd->getFd() << std::endl;
+            auto connect = m_connectFactory();
+            connect->setSocket(fd);
+            IChannel *nChannel = new Channel();
+            nChannel->setConnection(connect);
+            nChannel->setEvents(EPOLLIN);
+            channel->getEventLoop()->addNotification(nChannel);
+        }
+    } while (true);
+
+}
+
 bool Acceptor::startListen() {
     HYPER_COMPARE(m_socket->createSocket(), true, !=, return false, 
                 "create sock failed");
@@ -29,38 +52,5 @@ bool Acceptor::startListen() {
                 "listen sock failed");
     return true;
 }
-
-void Acceptor::onEvents(IPoll *poll) {
-    do {
-        auto fd = m_socket->accept();
-        if (fd <= 0) {
-            if (errno != EAGAIN && errno != EWOULDBLOCK) {
-                // LOG
-            }
-            return;
-        } else {
-            std::cout << "accept success: " << fd << std::endl;
-            ::shutdown(fd, 0); // read
-            ::shutdown(fd, 1); // write
-            /*
-            if (setConnectorFactory == nullptr) {
-                return;
-            }
-            IChannel *channel = setConnectorFactory();
-            channel->
-            poll->addEvent(channel);
-            */
-        }
-    } while (true);
-}
-
-int32 Acceptor::handleRead() {
-    return 0;
-}
-
-int32 Acceptor::handleWrite() {
-    return 0;
-}
-
 }
 }

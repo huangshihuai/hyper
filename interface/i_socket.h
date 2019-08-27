@@ -1,6 +1,7 @@
 #ifndef HYPER_INTERFACE_I_SOCKET_H
 #define HYPER_INTERFACE_I_SOCKET_H
 #include <string>
+#include <memory>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include "base/btype.h"
@@ -27,7 +28,7 @@ public:
     virtual bool createSocket() = 0;
     virtual bool bindAddress() = 0;
     virtual bool listen(int32 backlog) = 0;
-    virtual int  accept() = 0;
+    virtual std::shared_ptr<ISocket>  accept() = 0;
     virtual bool connect() = 0;
     virtual void shutdown() = 0;
     virtual void shutdownRead() = 0;
@@ -39,6 +40,10 @@ public:
     virtual void setPort(int32 port) = 0;
     virtual void setIp(const std::string &ip) = 0;
     virtual void setSocketModel(ESocketModel socketModel) = 0;
+    virtual void setSocketFd(SOCKET fd) = 0;
+    virtual SOCKET setSocketOptional(SOCKET fd)  = 0;
+    virtual int32 read(std::string &data) = 0;
+    virtual int32 write(std::string &data) = 0;
 };
 }
 }

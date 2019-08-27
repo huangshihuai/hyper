@@ -1,10 +1,11 @@
 #ifndef HYPER_INTERFACE_I_ACCEPTOR_H
 #define HYPER_INTERFACE_I_ACCEPTOR_H
 #include <string>
+#include <memory>
 #include "base/btype.h"
 #include "interface/i_event_loop.h"
-#include "interface/i_device.h"
 #include "base/e_socket_model.h"
+#include "base/f_factory.h"
 
 namespace hyper {
 namespace interface {
@@ -23,7 +24,7 @@ public:
     virtual void setPort(uint32 port) = 0;
     virtual void setIp(const std::string &ip) = 0;
     virtual void setDispatch() = 0;
-    virtual void setConnectorFactory() = 0;
+    virtual void setConnectorFactory(f_connectFactory connectFactory) = 0;
     virtual void setSocketModel(ESocketModel socketModel) = 0;
 };
 }

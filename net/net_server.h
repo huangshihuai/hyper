@@ -17,15 +17,14 @@ public:
     NetServer();
     virtual ~NetServer();
     inline void setOptional(std::shared_ptr<IOptional> optional) override { m_optional = optional; };
-    inline void addServer(std::shared_ptr<IServer> server) override { m_server = server; };
-    void setServerFactory() override { };
+    inline void addServerFactory(f_connectFactory serverFactory) override { m_serverFactory = serverFactory; };
     bool start() override;
     void waitQuit() override;
 protected:
     bool init();
 private:
     std::shared_ptr<IOptional> m_optional;
-    std::shared_ptr<IServer> m_server;
+    f_connectFactory m_serverFactory;
     // Acceptor thread when if ENetModel is KERNEL_DISPATCH
     std::shared_ptr<IEventLoopThread> m_eventAcceptor;
     std::vector<std::shared_ptr<IEventLoopThread>> m_eventLoopThreadPoll;

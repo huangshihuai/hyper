@@ -1,21 +1,18 @@
 #include "channel.h"
+#include <sys/epoll.h>
+#include <iostream>
+
 namespace hyper {
 namespace net {
+
+Channel::Channel() {
+}
 
 Channel::~Channel() {
 }
 
-int32 Channel::handleRead() {
-    return 0;
-}
-int32 Channel::handleWrite() { 
-    return 0;
-}
-SOCKET Channel::getFd() {
-    return 0;
-}
-int32 Channel::getEvents() {
-    return 0;
+void Channel::disConnection() {
+    this->m_eventLoop->clearNotify(this);
 }
 }
 }

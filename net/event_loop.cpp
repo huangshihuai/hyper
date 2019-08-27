@@ -21,8 +21,12 @@ uint32 EventLoop::loop() {
 void EventLoop::addEvent() {
 
 }
-void EventLoop::setNotification(IChannel* channel) {
+
+void EventLoop::addNotification(IChannel* channel) {
     m_eventEpoll->addEvent(channel);
+}
+
+void EventLoop::clearNotify(IConnection *connection) {
 }
 }
 }

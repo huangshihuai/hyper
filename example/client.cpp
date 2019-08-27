@@ -15,7 +15,7 @@ int main() {
                 "create socket failed");
     HYPER_COMPARE(socket->connect(), true, !=, return 1,
                 "connect failed");
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     socket->shutdown();
     return 0;
 }

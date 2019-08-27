@@ -9,6 +9,7 @@
 #include "base/btype.h"
 #include "interface/i_socket.h"
 #include "base/e_poll_events.h"
+#include "interface/i_connection.h"
 
 namespace hyper {
 namespace net {
@@ -16,8 +17,9 @@ namespace net {
 using namespace hyper::interface;
 using namespace hyper::base;
 
-class Acceptor : public IAcceptor
-                , public IChannel {
+
+class Acceptor : public IAcceptor,
+                    public IConnection {
 public:
     Acceptor(const std::shared_ptr<IOptional> optional);
     virtual ~Acceptor();
@@ -27,17 +29,25 @@ public:
     inline void setKeepAlive(bool on) override { m_socket->setKeepAlive(on); };
     inline void setPort(uint32 port) override { m_socket->setPort(port); };
     inline void setIp(const std::string &ip) override { m_socket->setIp(ip); };
-    inline void setSocketModel(ESocketModel socketModel) override { m_socket->setSocketModel(socketModel); } 
-    bool startListen() override;
+    inline void setSocketModel(ESocketModel socketModel) override { m_socket->setSocketModel(socketModel); };
     inline void setDispatch() override { };
-    inline void setConnectorFactory() override { };
-    inline SOCKET getFd() override { std::cout << "getSocket - hsh" << m_socket->getFd();return m_socket->getFd(); };
-    void onEvents(IPoll *poll) override;
-    int32 handleRead() override;
-	int32 handleWrite() override;
-    int32 getEvents() override { return READ_EVENT; };
+    inline void setConnectorFactory(f_connectFactory connectFactory) override { m_connectFactory = connectFactory; };
+    inline void setSocket(std::shared_ptr<ISocket> socket) override { m_socket = socket; };
+    bool startListen() override;
+public:
+#pragma mark - the IConnection
+    void onEvents(IChannel *channel) override;
+    
+    void onRequest(const std::string &onRequestData, std::string &onResponseData) override { };
+    
+    void onResponse() override { };
+
+    void onClose() override { };
+
+    SOCKET getFd() override { return m_socket->getFd(); };
 private:
     std::shared_ptr<ISocket> m_socket;
+    f_connectFactory m_connectFactory;
 };
 }
 }

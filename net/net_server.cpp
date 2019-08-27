@@ -30,12 +30,15 @@ namespace net {
         auto threadNumber = m_optional->getThreadNumber();
         m_eventLoopThreadPoll.resize(threadNumber);
         for (size_t index = 0; index < threadNumber; ++index) {
-            Acceptor *acceptor = new Acceptor(m_optional);
+            std::shared_ptr<Acceptor> acceptor = std::make_shared<Acceptor>(m_optional);
+            acceptor->setConnectorFactory(m_serverFactory);
             acceptor->startListen();
+            IChannel *channel = new Channel();
+            channel->setConnection(acceptor);
             m_eventLoopThreadPoll[index] = std::make_shared<EventLoopThread>();
             HYPER_COMPARE(m_eventLoopThreadPoll[index]->init(),
                             0, !=, return false, "init the event loop thread failed");
-            m_eventLoopThreadPoll[index]->setNotification(acceptor);
+            m_eventLoopThreadPoll[index]->addNotification(channel);
             HYPER_COMPARE(m_eventLoopThreadPoll[index]->start(),
                             true, !=, return false, "start the event loop thread failed");
         }

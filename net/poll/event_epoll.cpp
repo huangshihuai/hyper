@@ -25,12 +25,14 @@ uint32 EventEpoll::poll(uint32 timeout/*, std::vector<IChannel> &channelList*/) 
     int size = epoll_wait(m_epollFd, &(*m_eventList.begin()), m_eventList.size(), timeout);
     for (auto index = 0; index < size; ++index) {
         auto channel = static_cast<IChannel *>(m_eventList[index].data.ptr);
-        channel->onEvents(this);
+        channel->setEvents(m_eventList[index].events);
+        channel->onEvents();
     }
     return 0;
 }
 
 int32 EventEpoll::addEvent(IChannel* channel) {
+    // No Support EPOLLONESHOT
     std::cout << "add event\n";
     assert(channel != nullptr);
     struct epoll_event ev;
@@ -43,9 +45,7 @@ int32 EventEpoll::addEvent(IChannel* channel) {
     }
     ev.data.ptr = static_cast<void *>(channel);
     auto ret = epoll_ctl(m_epollFd, EPOLL_CTL_ADD, channel->getFd(), &ev);
-    if(ret >= 0) {
-        std::cout << "epoll_ctl success\n";
-    } else {
+    if(ret < 0) {
         std::cout << "epoll_ctl failed, strerrno: " << strerror(errno) << std::endl;
         // error 
     }

@@ -3,7 +3,6 @@
 #include <atomic>
 #include <thread>
 #include <memory>
-#include "interface/i_device.h"
 #include "interface/i_event_loop_thread.h"
 #include "interface/i_event_loop.h"
 #include "net/event_loop.h"
@@ -20,7 +19,7 @@ public:
     bool start() override;
     void waitQuit() override;
     void quit() override;
-    void setNotification(IChannel* channel) override;
+    void addNotification(IChannel* channel) override;
     int init() override;
 protected:
     void loop();
@@ -28,7 +27,6 @@ private:
      std::atomic_bool m_quit;
      std::thread m_thread;
      std::shared_ptr<IEventLoop> m_eventLoop;
-     std::shared_ptr<IDevice> m_device;
 };
 }
 }

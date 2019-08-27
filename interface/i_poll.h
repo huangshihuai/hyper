@@ -7,6 +7,8 @@
 namespace hyper {
 namespace interface {
 using namespace hyper::base;
+class IChannel;
+
 class IPoll {
 public:
     IPoll() { }

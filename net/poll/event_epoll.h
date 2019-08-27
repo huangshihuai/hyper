@@ -1,13 +1,10 @@
 #ifndef HYPER_NET_POLL_EVENT_EPOLL_H
 #define HYPER_NET_POLL_EVENT_EPOLL_H
 #include <vector>
-
 #include <sys/epoll.h>
-
 #include "base/e_poll_events.h"
 #include "base/btype.h"
 #include "interface/i_poll.h"
-#include "interface/i_device.h"
 
 namespace hyper {
 namespace net {

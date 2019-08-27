@@ -29,8 +29,9 @@ int EventLoopThread::init() {
     return 0;
 }
 
-inline void EventLoopThread::setNotification(IChannel* channel) {
-    m_eventLoop->setNotification(channel);
+inline void EventLoopThread::addNotification(IChannel* channel) {
+    channel->setEventLoop(m_eventLoop);
+    m_eventLoop->addNotification(channel);
 }
 
 void EventLoopThread::quit() {
