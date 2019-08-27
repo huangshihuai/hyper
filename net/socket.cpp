@@ -147,22 +147,17 @@ int32 Socket::read(std::string &data) {
 		if (ret > 0) {
 			readLen += ret;
 			bufsize -= ret;
-		}
-		else if (ret == 0) {
+		} else if (ret == 0) {
 			/*Socket closed*/
 			return -1;
-		}
-		else if (ret == -1) {
+		} else if (ret == -1) {
 			int32 errcode = errno;
 			if (errcode == EINTR) {
 				continue;
-			}
-			else if (errcode == EAGAIN 
-				|| errcode == EWOULDBLOCK) {
+			} else if (errcode == EAGAIN || errcode == EWOULDBLOCK) {
 				/*No data can be read*/
 				break;
-			}
-			else {
+			} else {
 				/*Unexpected error*/
 				return -1;
 			}
@@ -172,5 +167,8 @@ int32 Socket::read(std::string &data) {
 	return readLen;
 }
 
+int32 Socket::write(const std::string &data) {
+    return ::send(getFd(), (void *)(data.c_str()), (int)(data.size()), 0);
+}
 }
 }

@@ -43,7 +43,7 @@ public:
     virtual void setSocketFd(SOCKET fd) = 0;
     virtual SOCKET setSocketOptional(SOCKET fd)  = 0;
     virtual int32 read(std::string &data) = 0;
-    virtual int32 write(std::string &data) = 0;
+    virtual int32 write(const std::string &data) = 0;
 };
 }
 }

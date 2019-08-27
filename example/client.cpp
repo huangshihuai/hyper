@@ -15,7 +15,11 @@ int main() {
                 "create socket failed");
     HYPER_COMPARE(socket->connect(), true, !=, return 1,
                 "connect failed");
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    do {
+        int32 size = socket->write("hello");
+        std::cout << "the write size: " << size << std::endl;;
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    } while(true);
     socket->shutdown();
     return 0;
 }

@@ -22,12 +22,14 @@ void EventLoop::addEvent() {
 
 }
 
-void EventLoop::addNotification(IChannel* channel) {
+inline void EventLoop::addNotification(IChannel* channel) {
     m_eventEpoll->addEvent(channel);
 }
 
-void EventLoop::clearNotify(IConnection *connection) {
+inline void EventLoop::removeNotification(IChannel *channel) {
+    m_eventEpoll->removeNotification(channel);
 }
+
 }
 }
 

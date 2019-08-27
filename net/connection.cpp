@@ -1,5 +1,6 @@
 #include "net/connection.h"
 #include "base/e_poll_events.h"
+#include <iostream>
 
 namespace hyper {
 namespace net {
@@ -18,12 +19,18 @@ void Connection::onEvents(IChannel *channel) {
         // delete it;
         this->onClose();
         // clear Net Connection
-        channel->
+        channel->disConnection();
+        return;
     } else if (event & WRITE_EVENT) {
         // Wriet 
+        int32 size = m_socket->write("hello");
+        return;
     } else {
         // error
+        std::cout << "Connection::onEvents error\n";
+        return;
     }
+    std::cout << "thundering herd\n";
 }
 
 }

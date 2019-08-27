@@ -28,7 +28,7 @@ public:
     inline void setSocketFd(SOCKET fd) override { m_socketFd = fd; };
     SOCKET setSocketOptional(SOCKET fd) override;
     int32 read(std::string &data) override;
-    int32 write(std::string &data) override { return 0; };
+    int32 write(const std::string &data) override;
 private:
     bool m_tcpNoDelay; // TCP_CORK
     bool m_reuseAddr;

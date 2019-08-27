@@ -36,8 +36,10 @@ void Acceptor::onEvents(IChannel *channel) {
             connect->setSocket(fd);
             IChannel *nChannel = new Channel();
             nChannel->setConnection(connect);
-            nChannel->setEvents(EPOLLIN);
-            channel->getEventLoop()->addNotification(nChannel);
+            nChannel->setEvents(READ_EVENT);
+            auto evenLoop = channel->getEventLoop();
+            nChannel->setEventLoop(evenLoop);
+            evenLoop->addNotification(nChannel);
         }
     } while (true);
 

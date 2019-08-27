@@ -20,6 +20,7 @@ public:
     uint32 poll(uint32 timeout/*, std::vector<IChannel> &channelList*/) override;
     int32 addEvent(IChannel* channel) override;
     void updateEvent() override;
+    void removeNotification(IChannel *channel) override;
 private:
     EPOLL m_epollFd;
     uint32 m_eventListBase;

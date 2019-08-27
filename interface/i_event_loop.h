@@ -18,7 +18,8 @@ public:
     virtual bool init() = 0;
     virtual uint32 loop() = 0;
     virtual void addEvent() = 0;
-    virtual void addNotification(IChannel* channel) = 0;
+    virtual void addNotification(IChannel *channel) = 0;
+    virtual void removeNotification(IChannel *channel) = 0;
 };
 
 }

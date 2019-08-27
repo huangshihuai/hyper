@@ -6,6 +6,7 @@
 #include "net_server.h"
 #include "net/acceptor.h"
 #include "event_loop_thread.h"
+#include "base/e_poll_events.h"
 
 namespace hyper {
 namespace net {
@@ -35,6 +36,7 @@ namespace net {
             acceptor->startListen();
             IChannel *channel = new Channel();
             channel->setConnection(acceptor);
+            channel->setEvents(READ_EVENT);
             m_eventLoopThreadPoll[index] = std::make_shared<EventLoopThread>();
             HYPER_COMPARE(m_eventLoopThreadPoll[index]->init(),
                             0, !=, return false, "init the event loop thread failed");

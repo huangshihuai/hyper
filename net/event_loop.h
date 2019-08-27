@@ -17,6 +17,7 @@ public:
     uint32 loop() override;
     void addEvent() override;
     void addNotification(IChannel* channel) override;
+    void removeNotification(IChannel *channel)  override;
 private:
     std::shared_ptr<IPoll> m_eventEpoll;
 };

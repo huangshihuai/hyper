@@ -12,7 +12,9 @@ Channel::~Channel() {
 }
 
 void Channel::disConnection() {
-    this->m_eventLoop->clearNotify(this);
+    this->m_eventLoop->removeNotification(this);
+    this->m_connection = nullptr;
+    this->m_eventLoop = nullptr;
 }
 }
 }

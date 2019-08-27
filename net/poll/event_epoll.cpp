@@ -37,6 +37,7 @@ int32 EventEpoll::addEvent(IChannel* channel) {
     assert(channel != nullptr);
     struct epoll_event ev;
     auto events = channel->getEvents();
+    ev.events = 0;
     if(events & READ_EVENT){
         ev.events |= EPOLLIN;
     }
@@ -47,10 +48,21 @@ int32 EventEpoll::addEvent(IChannel* channel) {
     auto ret = epoll_ctl(m_epollFd, EPOLL_CTL_ADD, channel->getFd(), &ev);
     if(ret < 0) {
         std::cout << "epoll_ctl failed, strerrno: " << strerror(errno) << std::endl;
-        // error 
     }
     return	ret;  
 }
+
+void EventEpoll::removeNotification(IChannel *channel) {
+    std::cout << "remove notification\n";
+    struct epoll_event ev;
+    ev.events = 0;
+    ev.data.ptr = static_cast<void *>(channel);
+    auto ret = epoll_ctl(m_epollFd, EPOLL_CTL_DEL, channel->getFd(), &ev);
+    if (ret < 0) {
+        std::cout << "epoll ctl failed. strerror: " << strerror(errno) << std::endl;
+    }
+}
+
 void EventEpoll::updateEvent() {
 }
 
