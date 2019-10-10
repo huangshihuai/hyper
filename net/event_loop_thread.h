@@ -1,5 +1,5 @@
-#ifndef HYPER_NET_EVENT_LOOP_THREAD_H
-#define HYPER_NET_EVENT_LOOP_THREAD_H
+#pragma once
+
 #include <atomic>
 #include <thread>
 #include <memory>
@@ -17,7 +17,7 @@ public:
     EventLoopThread();
     virtual ~EventLoopThread() {}
     bool start() override;
-    void waitQuit() override;
+    void waitingQuit() override;
     void quit() override;
     void addNotification(IChannel* channel) override;
     int init() override;
@@ -30,4 +30,3 @@ private:
 };
 }
 }
-#endif // HYPER_NET_EVENT_LOOP_THREAD_H

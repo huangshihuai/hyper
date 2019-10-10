@@ -1,5 +1,4 @@
-#ifndef HYPER_BASE_E_NET_MODEL_H
-#define HYPER_BASE_E_NET_MODEL_H
+#pragma once
 
 namespace hyper {
 namespace base {
@@ -11,5 +10,3 @@ enum ENetModel {
 
 }
 }
-
-#endif // HYPER_BASE_E_NET_MODEL_H

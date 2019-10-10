@@ -1,5 +1,5 @@
-#ifndef HYPER_INTERFACE_I_EVENT_LOOP_H
-#define HYPER_INTERFACE_I_EVENT_LOOP_H
+#pragma once
+
 #include <memory>
 #include "base/btype.h"
 #include "interface/i_channel.h"
@@ -17,11 +17,10 @@ public:
     virtual ~IEventLoop() {}
     virtual bool init() = 0;
     virtual uint32 loop() = 0;
-    virtual void addEvent() = 0;
     virtual void addNotification(IChannel *channel) = 0;
     virtual void removeNotification(IChannel *channel) = 0;
+    virtual void updateNotification(IChannel *channel) = 0;
 };
 
 }
 }
-#endif // HYPER_INTERFACE_I_EVENT_LOOP_H

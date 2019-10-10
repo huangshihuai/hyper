@@ -1,5 +1,11 @@
-add_subdirectory(poll)
+#add_subdirectory(poll)
+#add_subdirectory(service)
 
 aux_source_directory(. HYPER_NET_SOURCE)
-add_library(hypernet ${HYPER_NET_SOURCE})
-target_link_libraries(hypernet hypernetpoll)
+aux_source_directory(./poll HYPER_NET_POLL_SOURCE)
+aux_source_directory(./service HYPER_NET_SERVICE_SOURCE)
+#link_directories(net ${HYPER_NET_SOURCE})
+
+add_library(net ${HYPER_NET_SOURCE} ${HYPER_NET_POLL_SOURCE} ${HYPER_NET_SERVICE_SOURCE})
+
+#target_link_libraries(net hypernetpoll hypernetservice)

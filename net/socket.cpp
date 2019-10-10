@@ -2,6 +2,7 @@
 #include <sys/ioctl.h>
 #include <netinet/tcp.h>
 #include <sys/socket.h>
+#include <sys/types.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <errno.h>
@@ -12,12 +13,7 @@
 namespace hyper {
 namespace net{
 Socket::Socket() {
-    m_keepAlive = true;
-    m_reuseAddr = true;
-    m_reusePort = true;
-    m_tcpNoDelay = false;
     m_socketState = SocketState::NONE;
-    m_socketModel = ESocketModel::TCP;
     m_socketFd = -1;
 }
 Socket::~Socket() {
@@ -27,46 +23,56 @@ bool Socket::getTcpInfo(struct tcp_info* info) const {
     return true;
 }
 
-bool Socket::createSocket() {
-    if (m_socketModel != SOCK_STREAM && m_socketModel != SOCK_DGRAM) {
-        std::cout << "the socket model failed: " << m_socketModel << std::endl;;
+bool Socket::create() {
+    if (m_socketOption->getSocketType() != ESocketType::TCP && 
+        m_socketOption->getSocketType() != ESocketType::UDP) {
+        std::cout << "the socket model failed: " << m_socketOption->getSocketType() << std::endl;;
         return false;
     }
-    SOCKET fd = 0;
-    fd = ::socket(AF_INET, m_socketModel | SOCK_CLOEXEC | SOCK_NONBLOCK, IPPROTO_TCP);
-    if (fd < 0) {
+    m_socketFd = 0;
+    int type = m_socketOption->getSocketType() | SOCK_CLOEXEC;
+    if (m_socketOption->getNonBlock()) {
+        type |= SOCK_NONBLOCK;
+    }
+    // m_socketFd = ::socket(AF_INET, m_socketOption->getSocketType() | SOCK_CLOEXEC | SOCK_NONBLOCK, IPPROTO_TCP);
+    m_socketFd = ::socket(AF_INET, type, IPPROTO_TCP);
+    if (m_socketFd < 0) {
         std::cout << "errno" << errno << strerror(errno) << std::endl;
         return false;
     }
-    fd = setSocketOptional(fd);
-    /*
-    unsigned long nonblocking = 1;
-    ioctl(fd, FIONBIO, (void *)&nonblocking);
-    */
-    m_socketFd = fd;
+    setSocketFlags();
     m_socketState = SocketState::CREATE;
     return true;
 }
 
-SOCKET Socket::setSocketOptional(SOCKET fd) {
-    if (m_reuseAddr) {
+void Socket::setSocketFlags() {
+    if (m_socketOption->getReuseAddr()) {
         int reuseAddr = 1;
-        setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char *)&reuseAddr, sizeof(int));
+        setsockopt(m_socketFd, SOL_SOCKET, SO_REUSEADDR, (char *)&reuseAddr, sizeof(int));
     }
-    if (m_reusePort) {
+    if (m_socketOption->getReusePort()) {
         int reusePort = 1;
-        setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, (char *)&reusePort, sizeof(int));
+        setsockopt(m_socketFd, SOL_SOCKET, SO_REUSEPORT, (char *)&reusePort, sizeof(int));
     }
-    if (m_tcpNoDelay && m_socketModel == SOCK_STREAM) {
-        // disable Nagle algorithm
-        int tcpNoDelay = 1;
-        setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (char *)&tcpNoDelay, sizeof(int));
+    if (m_socketOption->getSocketType() == ESocketType::TCP) {
+        if (m_socketOption->getTcpNoDelay()) {
+            // disable Nagle algorithm
+            int tcpNoDelay = 1;
+            setsockopt(m_socketFd, IPPROTO_TCP, TCP_NODELAY, (char *)&tcpNoDelay, sizeof(int));
+        }
+        if (m_socketOption->getKeepAlive()) {
+            int keepalive = 1;
+            setsockopt(m_socketFd, SOL_SOCKET, SO_KEEPALIVE, (char *)&keepalive, sizeof(int));
+        }
     }
-    if (m_keepAlive) {
-        int keepalive = 1;
-        setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (char *)&keepalive, sizeof(int));
+    /*
+    if (m_fast) {
+        int fast = 6;
+        // https://github.com/shadowsocks/shadowsocks/wiki/TCP-Fast-Open
+        setsockopt(fd, SOL_TCP, TCP_FASTOPEN, (char *)&fast, sizeof(int));
     }
-    return fd;
+    // TCP_DEFER_ACCEPT
+    */
 }
 
 bool Socket::bindAddress() {
@@ -98,7 +104,8 @@ std::shared_ptr<ISocket> Socket::accept() {
     struct sockaddr clientAddr;
     socklen_t in_len;
     in_len = sizeof(clientAddr);
-    auto fd = ::accept4(m_socketFd, &clientAddr, &in_len, SOCK_CLOEXEC | SOCK_NONBLOCK);
+    int type = SOCK_CLOEXEC | (m_socketOption->getNonBlock() ? SOCK_NONBLOCK : 0x00);
+    auto fd = ::accept4(m_socketFd, &clientAddr, &in_len, type);
     if (fd < 0) {
         std::cout << "accept fd error: " << strerror(errno) << std::endl;
         return nullptr;
@@ -110,40 +117,47 @@ std::shared_ptr<ISocket> Socket::accept() {
     memcpy(&sin, &clientAddr, sizeof(sin));
     socket->setIp(inet_ntoa(sin.sin_addr));
     socket->setPort(sin.sin_port);
-    fd = socket->setSocketOptional(fd);
     socket->setSocketFd(fd);
+    socket->setSocketOption(m_socketOption);
+    socket->setSocketFlags();
     return socket;
 }
 
 bool Socket::connect() {
-    if (m_socketState != SocketState::CREATE && m_socketFd > 0) {
+    if (m_socketState != SocketState::CREATE || m_socketFd < 0) {
         std::cout << "the connection failed\n";
         return false;
     }
-    if (m_socketModel != SOCK_STREAM) {
+    if (m_socketOption->getSocketType() != ESocketType::TCP) {
         std::cout << "the socket type must tcp\n";
         return false;
     }
-    int fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     struct sockaddr_in clientAddr;
     clientAddr.sin_family = AF_INET;
     clientAddr.sin_port = htons(m_port);
     clientAddr.sin_addr.s_addr = inet_addr(m_ip.c_str());
-    int ret = ::connect(fd, (struct sockaddr *)&clientAddr, sizeof(struct sockaddr));
-    if (0 != ret) {
-        std::cout << errno << strerror(errno) << std::endl;
-        return false;
-    }
-    m_socketFd = fd;
+    do {
+        int ret = ::connect(m_socketFd, (struct sockaddr *)&clientAddr, sizeof(struct sockaddr));
+        if (ret != 0) {
+            int32 errcode = errno;
+            if (errcode == EINPROGRESS) {
+                continue;
+            } else {
+                return false;
+            }
+        }
+        break;
+    } while(true);
     return true;;
 }
 
 int32 Socket::read(std::string &data) {
+    // see man recv.
     char ioBuf[2048];
     int32 bufsize = 2048;
     int32 readLen = 0;
     do {
-		int32 ret = recv(getFd(), ioBuf, bufsize, 0);
+		int32 ret = ::recv(getFd(), ioBuf, bufsize, MSG_HYPER);
 		if (ret > 0) {
 			readLen += ret;
 			bufsize -= ret;
@@ -158,17 +172,41 @@ int32 Socket::read(std::string &data) {
 				/*No data can be read*/
 				break;
 			} else {
-				/*Unexpected error*/
+                // print log 
+				/*Unexpected error, Socket closed*/
 				return -1;
 			}
 		}
-	}while(bufsize > 0);
+	} while (bufsize > 0);
+    ioBuf[readLen] = '\0';
     data = ioBuf;
 	return readLen;
 }
 
 int32 Socket::write(const std::string &data) {
-    return ::send(getFd(), (void *)(data.c_str()), (int)(data.size()), 0);
+    const char *buf = data.c_str();
+    int32 bufSize = data.size();
+    int32 writeLen = 0;
+    do {
+        int32 ret = ::send(getFd(), (buf + writeLen), bufSize, MSG_HYPER);
+        if (ret >= 0) {
+            writeLen += ret;
+            bufSize -= ret;
+        } else if (ret == -1) {
+            int32 errcode =  errno;
+            if (errcode == EINTR) {
+                continue;
+            } else if (EAGAIN == errcode || EWOULDBLOCK == errcode) {
+                return writeLen;
+            }
+            /* Socket closed*/
+            return -1;
+        }
+        if (bufSize == 0) {
+            break;
+        }
+    } while (true);
+    return writeLen;
 }
 }
 }

@@ -3,10 +3,13 @@
 #include <thread>
 
 #include "base/macro.h"
-#include "net_server.h"
+#include "net/net_server.h"
 #include "net/acceptor.h"
 #include "event_loop_thread.h"
 #include "base/e_poll_events.h"
+#include "net/service/net_model_factory.h"
+
+using namespace hyper::net::service;
 
 namespace hyper {
 namespace net {
@@ -24,34 +27,22 @@ namespace net {
     }
 
     bool NetServer::init() {
-
-        if (ENetModel::KERNEL_DISPATCH != m_optional->getNetModel()) {
+        m_netModelService = NetModelFactory::getNetModel(m_option->getNetModel());
+        if (nullptr == m_netModelService) {
             return false;
         }
-        auto threadNumber = m_optional->getThreadNumber();
-        m_eventLoopThreadPoll.resize(threadNumber);
-        for (size_t index = 0; index < threadNumber; ++index) {
-            std::shared_ptr<Acceptor> acceptor = std::make_shared<Acceptor>(m_optional);
-            acceptor->setConnectorFactory(m_serverFactory);
-            acceptor->startListen();
-            IChannel *channel = new Channel();
-            channel->setConnection(acceptor);
-            channel->setEvents(READ_EVENT);
-            m_eventLoopThreadPoll[index] = std::make_shared<EventLoopThread>();
-            HYPER_COMPARE(m_eventLoopThreadPoll[index]->init(),
-                            0, !=, return false, "init the event loop thread failed");
-            m_eventLoopThreadPoll[index]->addNotification(channel);
-            HYPER_COMPARE(m_eventLoopThreadPoll[index]->start(),
-                            true, !=, return false, "start the event loop thread failed");
-        }
+        m_netModelService->setThread(m_option->getThreadNumber());
+        m_netModelService->start(m_option);
         return true;
     }
 
-    void NetServer::waitQuit() {
+    void NetServer::waitingQuit() {
         do {
             // wait signal
             std::this_thread::sleep_for(std::chrono::seconds(5));
         } while (true);
+        m_netModelService->quit();
+        m_netModelService->waitingQuit();
         return;
     }
 }

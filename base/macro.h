@@ -1,5 +1,4 @@
-#ifndef HYPER_BASE_MACRO_H
-#define HYPER_BASE_MACRO_H
+#pragma once
 #include <iostream>
 
 namespace hyper {
@@ -13,5 +12,3 @@ namespace macro {
     } while (false)
 }
 }
-
-#endif // HYPER_BASE_MACRO_H

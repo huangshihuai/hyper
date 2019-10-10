@@ -1,7 +1,6 @@
 #include "acceptor.h"
 #include "net/socket.h"
 #include "base/macro.h"
-#include "sys/epoll.h"
 #include "net/channel.h"
 #include <memory>
 #include <thread>
@@ -9,44 +8,44 @@
 namespace hyper {
 namespace net {
 
-Acceptor::Acceptor(const std::shared_ptr<IOptional> optional) {
+Acceptor::Acceptor() {
     m_socket = std::make_shared<Socket>();
-    this->setTcpNoDelay(optional->getTcpNoDelay());
-    this->setReuseAddr(optional->getReuseAddr());
-    this->setReusePort(optional->getReusePort());
-    this->setKeepAlive(optional->getKeepAlive());
-    this->setPort(optional->getPort());
-    this->setIp(optional->getIp());
-    this->setSocketModel(optional->getServerType());
 }
 
 Acceptor::~Acceptor() {
 }
 
-void Acceptor::onEvents(IChannel *channel) {
+void Acceptor::onEvents() {
+    auto event = getEvents();
+    if (HYPER_READ & event) {
+        connected();
+        return;
+    }
+    
+}
+
+void Acceptor::connected() {
     do {
-        auto fd = m_socket->accept();
-        if (fd == nullptr) {
+        auto socket = m_socket->accept();
+        if (socket == nullptr) {
             if (errno != EAGAIN && errno != EWOULDBLOCK) {
             }
             return;
         } else {
-            std::cout << std::this_thread::get_id() << " accept success: " << fd->getFd() << std::endl;
-            auto connect = m_connectFactory();
-            connect->setSocket(fd);
-            IChannel *nChannel = new Channel();
-            nChannel->setConnection(connect);
-            nChannel->setEvents(READ_EVENT);
-            auto evenLoop = channel->getEventLoop();
-            nChannel->setEventLoop(evenLoop);
-            evenLoop->addNotification(nChannel);
+            // std::cout << std::this_thread::get_id() << " accept success: " << socket->getFd() << std::endl;
+            auto connector = m_connectFactory();
+            IChannel *channel = new Channel();
+            channel->setConnection(connector);
+            channel->setEvents(HYPER_READ);
+            channel->setEventLoop(m_eventLoop);
+            channel->setSocket(socket);
+            m_eventLoop->addNotification(channel);
         }
     } while (true);
-
 }
 
 bool Acceptor::startListen() {
-    HYPER_COMPARE(m_socket->createSocket(), true, !=, return false, 
+    HYPER_COMPARE(m_socket->create(), true, !=, return false, 
                 "create sock failed");
     HYPER_COMPARE(m_socket->bindAddress(), true, !=, return false,
                 "bind addr and prot failed");

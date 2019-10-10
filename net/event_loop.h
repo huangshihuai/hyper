@@ -15,11 +15,12 @@ public:
     virtual ~EventLoop();
     bool init() override;
     uint32 loop() override;
-    void addEvent() override;
     void addNotification(IChannel* channel) override;
     void removeNotification(IChannel *channel)  override;
+    void updateNotification(IChannel *channel) override;
 private:
     std::shared_ptr<IPoll> m_eventEpoll;
+    std::vector<IChannel *> m_channelList;
 };
 }
 }

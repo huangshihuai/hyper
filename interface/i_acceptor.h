@@ -1,11 +1,13 @@
-#ifndef HYPER_INTERFACE_I_ACCEPTOR_H
-#define HYPER_INTERFACE_I_ACCEPTOR_H
+#pragma once
+
 #include <string>
 #include <memory>
 #include "base/btype.h"
 #include "interface/i_event_loop.h"
-#include "base/e_socket_model.h"
+#include "base/e_socket_type.h"
 #include "base/f_factory.h"
+#include "interface/i_option.h"
+#include "interface/i_socket_option.h"
 
 namespace hyper {
 namespace interface {
@@ -17,16 +19,8 @@ public:
     IAcceptor() { };
     virtual ~IAcceptor() { };
     virtual bool startListen() = 0;
-    virtual void setTcpNoDelay(bool on) = 0;
-    virtual void setReuseAddr(bool on) = 0;
-    virtual void setReusePort(bool on) = 0;
-    virtual void setKeepAlive(bool on) = 0;
-    virtual void setPort(uint32 port) = 0;
-    virtual void setIp(const std::string &ip) = 0;
     virtual void setDispatch() = 0;
     virtual void setConnectorFactory(f_connectFactory connectFactory) = 0;
-    virtual void setSocketModel(ESocketModel socketModel) = 0;
 };
 }
 }
-#endif // HYPER_INTERFACE_I_ACCEPTOR_H

@@ -1,15 +1,15 @@
-#ifndef HYPER_NET_ACCEPTOR_H
-#define HYPER_NET_ACCEPTOR_H
+#pragma once
 
 #include <memory>
 #include <iostream>
-#include "interface/i_optional.h"
+#include "interface/i_option.h"
 #include "interface/i_acceptor.h"
 #include "interface/i_channel.h"
 #include "base/btype.h"
 #include "interface/i_socket.h"
 #include "base/e_poll_events.h"
 #include "interface/i_connection.h"
+#include "net/socket_option.h"
 
 namespace hyper {
 namespace net {
@@ -18,36 +18,31 @@ using namespace hyper::interface;
 using namespace hyper::base;
 
 
-class Acceptor : public IAcceptor,
-                    public IConnection {
+class Acceptor : public IAcceptor, public IChannel {
 public:
-    Acceptor(const std::shared_ptr<IOptional> optional);
+    Acceptor();
     virtual ~Acceptor();
-    inline void setTcpNoDelay(bool on) override { m_socket->setTcpNoDelay(on); };
-    inline void setReuseAddr(bool on) override { m_socket->setReuseAddr(on); };
-    inline void setReusePort(bool on) override { m_socket->setReusePort(on); };
-    inline void setKeepAlive(bool on) override { m_socket->setKeepAlive(on); };
-    inline void setPort(uint32 port) override { m_socket->setPort(port); };
-    inline void setIp(const std::string &ip) override { m_socket->setIp(ip); };
-    inline void setSocketModel(ESocketModel socketModel) override { m_socket->setSocketModel(socketModel); };
+    bool startListen() override;
     inline void setDispatch() override { };
     inline void setConnectorFactory(f_connectFactory connectFactory) override { m_connectFactory = connectFactory; };
-    inline void setSocket(std::shared_ptr<ISocket> socket) override { m_socket = socket; };
-    bool startListen() override;
-public:
-    void onEvents(IChannel *channel) override;
-    
-    void onRequest(const std::string &onRequestData, std::string &onResponseData) override { };
-    
-    void onResponse() override { };
-
-    void onClose() override { };
-
-    SOCKET getFd() override { return m_socket->getFd(); };
 private:
-    std::shared_ptr<ISocket> m_socket;
-    f_connectFactory m_connectFactory;
+    void connected();
+public:
+    void onEvents() override;
+    SOCKET getFd() override { return m_socket->getFd(); }
+    uint32 getEvents() override { return m_events; };
+    void setEvents(uint32 events) override { m_events = events; };
+    void setEventLoop(std::shared_ptr<IEventLoop> eventLoop) override { m_eventLoop = eventLoop; };
+    std::shared_ptr<IEventLoop> getEventLoop() override { return m_eventLoop; };
+    void disConnection() override { };
+    void addResponseData(const std::string &onResponseData) override { };
+    inline void setConnection(std::shared_ptr<IConnection> connection) override { };
+    inline void setSocket(std::shared_ptr<ISocket> socket) override { m_socket  = socket; };
+private:
+    uint32 m_events;
+    std::shared_ptr<ISocket> m_socket = nullptr;
+    f_connectFactory m_connectFactory = nullptr;
+    std::shared_ptr<IEventLoop> m_eventLoop = nullptr;
 };
 }
 }
-#endif // HYPER_NET_ACCEPTOR_H

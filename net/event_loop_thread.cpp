@@ -34,11 +34,11 @@ inline void EventLoopThread::addNotification(IChannel* channel) {
     m_eventLoop->addNotification(channel);
 }
 
-void EventLoopThread::quit() {
+inline void EventLoopThread::quit() {
     m_quit.store(true);
 }
 
-void EventLoopThread::waitQuit() {
+void EventLoopThread::waitingQuit() {
     m_thread.join();
 }
 }

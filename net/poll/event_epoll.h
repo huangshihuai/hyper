@@ -1,5 +1,5 @@
-#ifndef HYPER_NET_POLL_EVENT_EPOLL_H
-#define HYPER_NET_POLL_EVENT_EPOLL_H
+#pragma once
+
 #include <vector>
 #include <sys/epoll.h>
 #include "base/e_poll_events.h"
@@ -14,19 +14,20 @@ using namespace hyper::base;
 
 class EventEpoll : public IPoll {
 public:
-    explicit EventEpoll(uint32 eventListBase = 20);
+    explicit EventEpoll(uint32 backlog = 20);
     virtual ~EventEpoll();
     bool init() override;
-    uint32 poll(uint32 timeout/*, std::vector<IChannel> &channelList*/) override;
-    int32 addEvent(IChannel* channel) override;
-    void updateEvent() override;
+    uint32 poll(int32 timeout, std::vector<IChannel *> &channelList) override;
+    int32 addNotification(IChannel* channel) override;
+    void updateNotification(IChannel* channel) override;
     void removeNotification(IChannel *channel) override;
 private:
-    EPOLL m_epollFd;
-    uint32 m_eventListBase;
+    int32 update(int32 op, IChannel *channel);
+private:
+    poll_t m_epollFd;
+    uint32 m_backlog;
     std::vector<struct epoll_event> m_eventList;
 };
 }
 }
 }
-#endif // HYPER_NET_POLL_EVENT_EPOLL_H

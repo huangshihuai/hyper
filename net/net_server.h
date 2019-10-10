@@ -1,11 +1,14 @@
-#ifndef HYPER_NET_TCP_TCP_SERVER_H
-#define HYPER_NET_TCP_TCP_SERVER_H
-#include <vector>
+#pragma once
 
-#include "interface/i_acceptor.h"
-#include "interface/i_net_server.h"
-#include "interface/i_optional.h"
-#include "interface/i_event_loop_thread.h"
+#include <vector>
+#include <memory>
+
+#include "net/acceptor.h"
+#include "net/net_server.h"
+#include "net/option.h"
+#include "net/event_loop_thread.h"
+#include "net/service/net_model_factory.h"
+#include "interface/i_net_model_service.h"
 
 namespace hyper {
 namespace net {
@@ -16,20 +19,17 @@ class NetServer : public INetServer {
 public:
     NetServer();
     virtual ~NetServer();
-    inline void setOptional(std::shared_ptr<IOptional> optional) override { m_optional = optional; };
-    inline void addServerFactory(f_connectFactory serverFactory) override { m_serverFactory = serverFactory; };
+    inline void setOption(std::shared_ptr<IOption> option) override { m_option = option; };
     bool start() override;
-    void waitQuit() override;
+    void waitingQuit() override;
 protected:
     bool init();
 private:
-    std::shared_ptr<IOptional> m_optional;
-    f_connectFactory m_serverFactory;
+    std::shared_ptr<IOption> m_option = nullptr;
     // Acceptor thread when if ENetModel is KERNEL_DISPATCH
-    std::shared_ptr<IEventLoopThread> m_eventAcceptor;
+    std::shared_ptr<IEventLoopThread> m_eventAcceptor = nullptr;
     std::vector<std::shared_ptr<IEventLoopThread>> m_eventLoopThreadPoll;
+    std::shared_ptr<INetModelService> m_netModelService = nullptr;
 };
 }
 }
-
-#endif // HYPER_NET_TCP_TCP_SERVER_H

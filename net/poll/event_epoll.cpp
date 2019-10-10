@@ -8,8 +8,8 @@
 namespace hyper {
 namespace net {
 namespace poll {
-EventEpoll::EventEpoll(uint32 eventListBase) : m_epollFd(-1), m_eventListBase(eventListBase) {
-    m_eventList.resize(m_eventListBase);
+EventEpoll::EventEpoll(uint32 backlog) : m_epollFd(-1), m_backlog(backlog) {
+    m_eventList.resize(m_backlog);
 }
 
 EventEpoll::~EventEpoll() {
@@ -21,49 +21,60 @@ bool EventEpoll::init() {
     return true;
 }
 
-uint32 EventEpoll::poll(uint32 timeout/*, std::vector<IChannel> &channelList*/) {
-    int size = epoll_wait(m_epollFd, &(*m_eventList.begin()), m_eventList.size(), timeout);
-    for (auto index = 0; index < size; ++index) {
+uint32 EventEpoll::poll(int32 timeout, std::vector<IChannel *> &channelList) {
+    channelList.clear();
+    int32 size = epoll_wait(m_epollFd, &(*m_eventList.begin()), static_cast<int>(m_eventList.size()), timeout);
+    for (int32 index = 0; index < size; ++index) {
         auto channel = static_cast<IChannel *>(m_eventList[index].data.ptr);
         channel->setEvents(m_eventList[index].events);
-        channel->onEvents();
+        channelList.push_back(channel);
     }
+    // time
     return 0;
 }
 
-int32 EventEpoll::addEvent(IChannel* channel) {
-    // No Support EPOLLONESHOT
-    std::cout << "add event\n";
+int32 EventEpoll::addNotification(IChannel* channel) {
+    // No Support EPOLLONESHOT EPOLLET
+    // std::cout << "add notification\n";
     assert(channel != nullptr);
-    struct epoll_event ev;
-    auto events = channel->getEvents();
-    ev.events = 0;
-    if(events & READ_EVENT){
-        ev.events |= EPOLLIN;
-    }
-    if(events & WRITE_EVENT){
-        ev.events |= EPOLLOUT;
-    }
-    ev.data.ptr = static_cast<void *>(channel);
-    auto ret = epoll_ctl(m_epollFd, EPOLL_CTL_ADD, channel->getFd(), &ev);
-    if(ret < 0) {
-        std::cout << "epoll_ctl failed, strerrno: " << strerror(errno) << std::endl;
-    }
-    return	ret;  
+    return update(HYPER_OP_ADD, channel);
 }
 
 void EventEpoll::removeNotification(IChannel *channel) {
-    std::cout << "remove notification\n";
-    struct epoll_event ev;
-    ev.events = 0;
-    ev.data.ptr = static_cast<void *>(channel);
-    auto ret = epoll_ctl(m_epollFd, EPOLL_CTL_DEL, channel->getFd(), &ev);
-    if (ret < 0) {
-        std::cout << "epoll ctl failed. strerror: " << strerror(errno) << std::endl;
-    }
+    // std::cout << "remove notification\n";
+    update(HYPER_OP_DEL, channel);
 }
 
-void EventEpoll::updateEvent() {
+void EventEpoll::updateNotification(IChannel* channel) {
+    // std::cout << "update notification\n";
+    update(HYPER_OP_MOD, channel);
+}
+
+int32 EventEpoll::update(int32 op, IChannel *channel) {
+    struct epoll_event ev;
+    ev.events = 0x00;
+    ev.data.ptr = nullptr;
+    do {
+        if (op == HYPER_OP_DEL) {
+            break;
+        }
+        ev.events = HYPER_ET;
+        auto events = channel->getEvents();
+        if(events & HYPER_READ) {
+            ev.events |= HYPER_READ;
+        }
+
+        if(events & HYPER_WRITE) {
+            ev.events |= HYPER_WRITE;
+        }
+        ev.data.ptr = static_cast<void *>(channel);
+    } while (false);
+    auto ret = epoll_ctl(m_epollFd, op, channel->getFd(), &ev);
+    if(ret < 0) {
+        std::cout << "epoll_ctl failed, strerrno: " << strerror(errno) << std::endl;
+    }
+    // std::cout << "m_epollFd: " << m_epollFd << ", op: " << op << ", events: " << ev.events << ", ret: " << ret << std::endl;
+    return	ret;  
 }
 
 }

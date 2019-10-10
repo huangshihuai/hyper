@@ -1,9 +1,9 @@
-#ifndef HYPER_BASE_BTYPE_H
-#define HYPER_BASE_BTYPE_H
+#pragma once
 
 #ifdef __linux
 #include <sys/types.h>
 #include <sys/socket.h>
+
 #endif // linux
 namespace hyper {
 namespace base {
@@ -22,7 +22,7 @@ namespace base {
     typedef	int8_t		        sint8;
     typedef	int8_t		        int8;
     typedef	int	                SOCKET;
-    typedef int                 EPOLL;
+    typedef int                 poll_t;
 #else
     typedef unsigned long long  uint64;
     typedef long long           sint64;
@@ -42,4 +42,3 @@ namespace base {
 #endif
 }
 }
-#endif // HYPER_BASE_BTYPE_H
