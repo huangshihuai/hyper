@@ -17,6 +17,7 @@ public:
     inline void setKeepAlive(bool on) override { m_keepAlive = on; };
     inline void setFast(bool on) override { m_fast = on; };
     inline void setNonBlock(bool on) override { m_nonBlock = on; };
+    inline void setSocketDomain(ESocketDomain socketDomain = ESocketDomain::IPV4) override { m_socketDomain = socketDomain; };
 
     inline ESocketType getSocketType() const override { return m_socketType; };
     inline bool getTcpNoDelay() const override { return m_tcpNoDelay; };
@@ -25,8 +26,10 @@ public:
     inline bool getKeepAlive() const override { return m_keepAlive; };
     inline bool getFast() const override { return m_fast; };
     inline bool getNonBlock() const override { return m_nonBlock; };
+    inline ESocketDomain getSocketDomain() const override { return m_socketDomain; };
 private:
     ESocketType m_socketType = ESocketType::TCP;
+    ESocketDomain m_socketDomain = ESocketDomain::IPV4;
     bool m_tcpNoDelay = true;
     bool m_reuseAddr = false;
     bool m_reusePort = false;

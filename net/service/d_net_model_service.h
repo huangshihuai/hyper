@@ -12,7 +12,7 @@ class DNetModelService : public INetModelService {
 public:
     DNetModelService();
     virtual ~DNetModelService();
-    bool start(std::shared_ptr<IOption> option) override;
+    bool start(std::shared_ptr<IOptions> option) override;
     void quit() override;
     void waitingQuit() override;
     void setThread(uint32 threadNumber) override { };

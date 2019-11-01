@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <iostream>
-#include "interface/i_option.h"
+#include "interface/i_options.h"
 #include "interface/i_acceptor.h"
 #include "interface/i_channel.h"
 #include "base/btype.h"
@@ -38,11 +38,13 @@ public:
     void addResponseData(const std::string &onResponseData) override { };
     inline void setConnection(std::shared_ptr<IConnection> connection) override { };
     inline void setSocket(std::shared_ptr<ISocket> socket) override { m_socket  = socket; };
+    inline void setProtocol(ProtocolTypes protocolType) { m_protocolType = protocolType; };
 private:
     uint32 m_events;
     std::shared_ptr<ISocket> m_socket = nullptr;
     f_connectFactory m_connectFactory = nullptr;
     std::shared_ptr<IEventLoop> m_eventLoop = nullptr;
+    ProtocolTypes m_protocolType;
 };
 }
 }

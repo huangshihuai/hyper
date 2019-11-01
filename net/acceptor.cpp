@@ -32,13 +32,13 @@ void Acceptor::connected() {
             }
             return;
         } else {
-            // std::cout << std::this_thread::get_id() << " accept success: " << socket->getFd() << std::endl;
             auto connector = m_connectFactory();
-            IChannel *channel = new Channel();
+            Channel *channel = new Channel();
             channel->setConnection(connector);
             channel->setEvents(HYPER_READ);
             channel->setEventLoop(m_eventLoop);
             channel->setSocket(socket);
+            channel->setProtocol(m_protocolType);
             m_eventLoop->addNotification(channel);
         }
     } while (true);

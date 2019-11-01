@@ -52,7 +52,7 @@ void EventEpoll::updateNotification(IChannel* channel) {
 
 int32 EventEpoll::update(int32 op, IChannel *channel) {
     struct epoll_event ev;
-    ev.events = 0x00;
+    ev.events = HYPER_LT;
     ev.data.ptr = nullptr;
     do {
         if (op == HYPER_OP_DEL) {
@@ -71,7 +71,7 @@ int32 EventEpoll::update(int32 op, IChannel *channel) {
     } while (false);
     auto ret = epoll_ctl(m_epollFd, op, channel->getFd(), &ev);
     if(ret < 0) {
-        std::cout << "epoll_ctl failed, strerrno: " << strerror(errno) << std::endl;
+        std::cout << "epoll_ctl failed, strerrno: " << strerror(errno) << channel->getFd() << std::endl;
     }
     // std::cout << "m_epollFd: " << m_epollFd << ", op: " << op << ", events: " << ev.events << ", ret: " << ret << std::endl;
     return	ret;  

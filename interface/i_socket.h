@@ -5,7 +5,7 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include "base/btype.h"
-#include "base/e_socket_type.h"
+#include "base/e_socket.h"
 #include "interface/i_socket_option.h"
 
 namespace hyper {
@@ -43,7 +43,7 @@ public:
     virtual void shutdownWrite() = 0;
     virtual void setPort(int32 port) = 0;
     virtual void setIp(const std::string &ip) = 0;
-    virtual void setSocketFd(SOCKET fd) = 0;
+    //virtual void setSocketFd(SOCKET fd) = 0;
     virtual void setSocketOption(std::shared_ptr<ISocketOption> socketOption) = 0;
     virtual void setSocketFlags()  = 0;
     virtual int32 read(std::string &data) = 0;

@@ -25,26 +25,26 @@ void Channel::addResponseData(const std::string &onResponseData) {
 
 int32 Channel::onRead() {
     std::string data;
-    std::string response;
+    std::string responseStr;
     int32 size = m_socket->read(data);
     if (size != -1) {
-        m_connection->onRequest(data, response);
+        auto protocol = hyper::net::protocols::registerProtocols[m_protocolType];
+        auto request = protocol.createMessage();
+        protocol.unserialization(data, request);
+        auto response = protocol.createMessage();
+        m_connection->onRequest(request, response);
+        protocol.serialization(responseStr, response);
+        protocol.destroyMessage(request);
+        protocol.destroyMessage(response);
     }
-    /*
-    if (!response.empty()) {
-        std::cout << "response: " << response << std::endl;
-        m_socket->write(response);
-    }
-    */
-    if (!response.empty()) {
-        m_wirteBuf = response;
+    if (!responseStr.empty()) {
+        m_wirteBuf = responseStr;
         this->setEvents(HYPER_WRITE);
     }
     return size;
 }
 
 inline int32 Channel::onWrite() {
-    //std::cout << "try wriet: " << m_wirteBuf << std::endl;
     int32 size = 0;
     do {
         if (m_wirteBuf.size() <= 0) {
@@ -78,12 +78,10 @@ void Channel::onEvents() {
     int32 errCode = 0;
     if (event & HYPER_READ) {
         // Read
-        // std::cout << "onEvents HYPER_READ\n";
         errCode = onRead();
         // protocol
         // to user space
     } else if (event & HYPER_WRITE) {
-        //std::cout << "onEvents HYPER_WRITE\n";
         errCode = onWrite();
     } else {
         // error

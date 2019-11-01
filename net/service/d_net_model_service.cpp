@@ -10,7 +10,7 @@ DNetModelService::DNetModelService() {
 DNetModelService::~DNetModelService() {
 }
 
-bool DNetModelService::start(std::shared_ptr<IOption> option) {
+bool DNetModelService::start(std::shared_ptr<IOptions> option) {
     return true;
 }
 

@@ -9,6 +9,7 @@
 #include <cstring>
 #include <string.h>
 #include <iostream>
+#include <thread>
 
 namespace hyper {
 namespace net{
@@ -34,8 +35,10 @@ bool Socket::create() {
     if (m_socketOption->getNonBlock()) {
         type |= SOCK_NONBLOCK;
     }
-    // m_socketFd = ::socket(AF_INET, m_socketOption->getSocketType() | SOCK_CLOEXEC | SOCK_NONBLOCK, IPPROTO_TCP);
-    m_socketFd = ::socket(AF_INET, type, IPPROTO_TCP);
+    
+    auto afInet = m_socketOption->getSocketDomain();
+    // m_socketFd = ::socket(afInet, m_socketOption->getSocketType() | SOCK_CLOEXEC | SOCK_NONBLOCK, IPPROTO_TCP);
+    m_socketFd = ::socket(afInet, type, IPPROTO_TCP);
     if (m_socketFd < 0) {
         std::cout << "errno" << errno << strerror(errno) << std::endl;
         return false;
@@ -80,9 +83,13 @@ bool Socket::bindAddress() {
         return false;
     }
     struct sockaddr_in srv;
-    srv.sin_family = AF_INET;
-    srv.sin_addr.s_addr = ::inet_addr(m_ip.c_str());
-    std::cout << "bindAddress: " << m_port << std::endl;
+    auto afInet = m_socketOption->getSocketDomain();
+    srv.sin_family = afInet;
+    if ("0.0.0.0" == m_ip) {
+        srv.sin_addr.s_addr = INADDR_ANY;
+    } else {
+        srv.sin_addr.s_addr = ::inet_addr(m_ip.c_str());
+    }
     srv.sin_port = htons(m_port);
     int ret = ::bind(m_socketFd, (struct sockaddr*)&srv, sizeof(sockaddr));
     if (ret < 0) {
@@ -101,26 +108,32 @@ bool Socket::listen(int32 backlog) {
 }
 
 std::shared_ptr<ISocket> Socket::accept() {
+    auto socket = std::make_shared<Socket>();
+    socket->setSocketOption(m_socketOption);
+    if (!socket->accept(m_socketFd)) {
+        return nullptr;
+    }
+    return socket;
+}
+
+bool Socket::accept(SOCKET acceptFd) {
     struct sockaddr clientAddr;
     socklen_t in_len;
     in_len = sizeof(clientAddr);
     int type = SOCK_CLOEXEC | (m_socketOption->getNonBlock() ? SOCK_NONBLOCK : 0x00);
-    auto fd = ::accept4(m_socketFd, &clientAddr, &in_len, type);
-    if (fd < 0) {
-        std::cout << "accept fd error: " << strerror(errno) << std::endl;
-        return nullptr;
+    m_socketFd = ::accept4(acceptFd, &clientAddr, &in_len, type);
+    if (m_socketFd < 0) {
+        std::cout << std::this_thread::get_id() << " accept fd error: " << strerror(errno) << std::endl;
+        return false;
         // LOG strerror(errno);
     }
-    std::shared_ptr<ISocket> socket = std::make_shared<Socket>();
     // get remote ip and prot;
     sockaddr_in sin;
     memcpy(&sin, &clientAddr, sizeof(sin));
-    socket->setIp(inet_ntoa(sin.sin_addr));
-    socket->setPort(sin.sin_port);
-    socket->setSocketFd(fd);
-    socket->setSocketOption(m_socketOption);
-    socket->setSocketFlags();
-    return socket;
+    setIp(inet_ntoa(sin.sin_addr));
+    setPort(sin.sin_port);
+    setSocketFlags();
+    return true;
 }
 
 bool Socket::connect() {
@@ -133,16 +146,19 @@ bool Socket::connect() {
         return false;
     }
     struct sockaddr_in clientAddr;
-    clientAddr.sin_family = AF_INET;
+    auto afInet = m_socketOption->getSocketDomain();
+    clientAddr.sin_family = afInet;
     clientAddr.sin_port = htons(m_port);
     clientAddr.sin_addr.s_addr = inet_addr(m_ip.c_str());
     do {
         int ret = ::connect(m_socketFd, (struct sockaddr *)&clientAddr, sizeof(struct sockaddr));
         if (ret != 0) {
             int32 errcode = errno;
-            if (errcode == EINPROGRESS) {
+            if (errcode == EINPROGRESS || errcode == EALREADY) {
                 continue;
             } else {
+                std::cout << "errno: " << errno << " " << strerror(errno) << std::endl;
+                abort();
                 return false;
             }
         }
@@ -163,7 +179,7 @@ int32 Socket::read(std::string &data) {
 			bufsize -= ret;
 		} else if (ret == 0) {
 			/*Socket closed*/
-			return -1;
+			return SOCKET_CLOSE;
 		} else if (ret == -1) {
 			int32 errcode = errno;
 			if (errcode == EINTR) {
@@ -174,12 +190,12 @@ int32 Socket::read(std::string &data) {
 			} else {
                 // print log 
 				/*Unexpected error, Socket closed*/
-				return -1;
+				return SOCKET_CLOSE;
 			}
 		}
 	} while (bufsize > 0);
     ioBuf[readLen] = '\0';
-    data = ioBuf;
+    data.append(ioBuf, readLen);
 	return readLen;
 }
 
@@ -200,7 +216,7 @@ int32 Socket::write(const std::string &data) {
                 return writeLen;
             }
             /* Socket closed*/
-            return -1;
+            return SOCKET_CLOSE;
         }
         if (bufSize == 0) {
             break;

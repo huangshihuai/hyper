@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include "base/btype.h"
-#include "base/e_socket_type.h"
+#include "base/e_socket.h"
 
 namespace hyper {
 namespace interface {
@@ -19,6 +19,7 @@ public:
     virtual void setKeepAlive(bool on) = 0;
     virtual void setFast(bool on) = 0;
     virtual void setNonBlock(bool on) = 0;
+    virtual void setSocketDomain(ESocketDomain socketDomain) =  0;
 
     virtual ESocketType getSocketType() const = 0;
     virtual bool getTcpNoDelay() const = 0;
@@ -27,6 +28,7 @@ public:
     virtual bool getKeepAlive() const = 0;
     virtual bool getFast() const = 0;
     virtual bool getNonBlock() const = 0;
+    virtual ESocketDomain getSocketDomain() const =  0;
 };
 }
 }

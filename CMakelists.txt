@@ -20,13 +20,12 @@ SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
 include_directories(".")
 
 add_subdirectory(net)
-#add_subdirectory(protocols)
 
 add_executable(echo_server "example/echo_server.cpp")
 TARGET_LINK_LIBRARIES(echo_server net pthread)
 
-add_executable(client "example/echo_client.cpp")
-TARGET_LINK_LIBRARIES(client net pthread)
+add_executable(echo_client "example/echo_client.cpp")
+TARGET_LINK_LIBRARIES(echo_client net pthread)
 
 add_executable(echo_multi_server "example/echo_multi_server.cpp")
 TARGET_LINK_LIBRARIES(echo_multi_server net pthread)

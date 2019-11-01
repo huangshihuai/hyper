@@ -3,8 +3,8 @@
 #ifdef __linux
 #include <sys/types.h>
 #include <sys/socket.h>
-
 #endif // linux
+
 namespace hyper {
 namespace base {
 

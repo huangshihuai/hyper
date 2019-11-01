@@ -5,28 +5,32 @@ namespace hyper {
 namespace net {
 
 using namespace interface;
+
 class Socket : public ISocket {
 public:
     Socket();
     virtual ~Socket();
-    bool getTcpInfo(struct tcp_info* info) const;
-    bool create();
-    bool bindAddress();
-    bool listen(int32 backlog);
-    std::shared_ptr<ISocket>  accept();
-    bool connect();
-    inline SOCKET getFd() const { return m_socketFd; };
-    inline void close()  { ::close(m_socketFd); };
-    inline void shutdown() { ::shutdown(m_socketFd, SHUT_RDWR); };
-    inline void shutdownRead() { ::shutdown(m_socketFd, SHUT_RD); };
-    inline void shutdownWrite() { ::shutdown(m_socketFd, SHUT_WR); };
-    inline void setIp(const std::string &ip){ m_ip = ip; };
-    inline void setPort(int32 port){ m_port = port; };
-    inline void setSocketOption(std::shared_ptr<ISocketOption> socketOption) { m_socketOption = socketOption; };
-    inline void setSocketFd(SOCKET fd) { m_socketFd = fd; };
+    bool getTcpInfo(struct tcp_info* info) const override;
+    bool create() override;
+    bool bindAddress() override;
+    bool listen(int32 backlog) override;
+    std::shared_ptr<ISocket>  accept() override;
+    bool connect() override;
+    inline SOCKET getFd() const override { return m_socketFd; };
+    inline void close() override { ::close(m_socketFd); };
+    inline void shutdown() override { ::shutdown(m_socketFd, SHUT_RDWR); };
+    inline void shutdownRead() override { ::shutdown(m_socketFd, SHUT_RD); };
+    inline void shutdownWrite() override { ::shutdown(m_socketFd, SHUT_WR); };
+    inline void setIp(const std::string &ip) override { m_ip = ip; };
+    inline void setPort(int32 port) override { m_port = port; };
+    inline void setSocketOption(std::shared_ptr<ISocketOption> socketOption) override { m_socketOption = socketOption; };
+    //inline void setSocketFd(SOCKET fd) override { m_socketFd = fd; };
     void setSocketFlags() override;
-    int32 read(std::string &data);
-    int32 write(const std::string &data);
+    int32 read(std::string &data) override;
+    int32 write(const std::string &data) override;
+private:
+    bool accept(SOCKET acceptFd);
+    inline void setSocketFd(SOCKET fd) { m_socketFd = fd; };
 private:
     uint32 m_port;
     std::string m_ip;

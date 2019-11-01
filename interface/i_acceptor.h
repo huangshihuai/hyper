@@ -4,9 +4,9 @@
 #include <memory>
 #include "base/btype.h"
 #include "interface/i_event_loop.h"
-#include "base/e_socket_type.h"
+#include "base/e_socket.h"
 #include "base/f_factory.h"
-#include "interface/i_option.h"
+#include "interface/i_options.h"
 #include "interface/i_socket_option.h"
 
 namespace hyper {
