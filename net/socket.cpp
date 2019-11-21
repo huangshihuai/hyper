@@ -173,30 +173,30 @@ int32 Socket::read(std::string &data) {
     int32 bufsize = 2048;
     int32 readLen = 0;
     do {
-		int32 ret = ::recv(getFd(), ioBuf, bufsize, MSG_HYPER);
-		if (ret > 0) {
-			readLen += ret;
-			bufsize -= ret;
-		} else if (ret == 0) {
-			/*Socket closed*/
-			return SOCKET_CLOSE;
-		} else if (ret == -1) {
-			int32 errcode = errno;
-			if (errcode == EINTR) {
-				continue;
-			} else if (errcode == EAGAIN || errcode == EWOULDBLOCK) {
-				/*No data can be read*/
-				break;
-			} else {
+        int32 ret = ::recv(getFd(), ioBuf, bufsize, MSG_HYPER);
+        if (ret > 0) {
+            readLen += ret;
+            bufsize -= ret;
+        } else if (ret == 0) {
+            /*Socket closed*/
+            return SOCKET_CLOSE;
+        } else if (ret == -1) {
+            int32 errcode = errno;
+            if (errcode == EINTR) {
+                continue;
+            } else if (errcode == EAGAIN || errcode == EWOULDBLOCK) {
+                /*No data can be read*/
+                break;
+            } else {
                 // print log 
-				/*Unexpected error, Socket closed*/
-				return SOCKET_CLOSE;
-			}
-		}
-	} while (bufsize > 0);
+                /*Unexpected error, Socket closed*/
+                return SOCKET_CLOSE;
+            }
+        }
+    } while (bufsize > 0);
     ioBuf[readLen] = '\0';
     data.append(ioBuf, readLen);
-	return readLen;
+    return readLen;
 }
 
 int32 Socket::write(const std::string &data) {

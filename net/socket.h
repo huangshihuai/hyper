@@ -24,7 +24,6 @@ public:
     inline void setIp(const std::string &ip) override { m_ip = ip; };
     inline void setPort(int32 port) override { m_port = port; };
     inline void setSocketOption(std::shared_ptr<ISocketOption> socketOption) override { m_socketOption = socketOption; };
-    //inline void setSocketFd(SOCKET fd) override { m_socketFd = fd; };
     void setSocketFlags() override;
     int32 read(std::string &data) override;
     int32 write(const std::string &data) override;

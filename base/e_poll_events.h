@@ -3,9 +3,6 @@
 #include <sys/epoll.h>
 namespace hyper {
 namespace base {
-
-#ifdef __linux // must Linux Platform
-
     #define HYPER_READ      EPOLLIN
     #define HYPER_PRI       EPOLLPRI
     #define HYPER_WRITE     EPOLLOUT
@@ -27,30 +24,5 @@ namespace base {
     #define HYPER_OP_ADD       EPOLL_CTL_ADD
     #define HYPER_OP_DEL       EPOLL_CTL_DEL
     #define HYPER_OP_MOD       EPOLL_CTL_MOD
-
-#else
-
-    #define HYPER_READ
-    #define HYPER_PRI
-    #define HYPER_WRITE
-    #define HYPER_RDNORM
-    #define HYPER_RDBAND
-    #define HYPER_WRNORM
-    #define HYPER_WRBAND
-    #define HYPER_MSG
-    #define HYPER_ERR
-    #define HYPER_HUP
-    #define HYPER_RDHUP
-    #define HYPER_EXCLUSIVE
-    #define HYPER_WAKEUP
-    #define HYPER_ONESHOT
-    #define HYPER_ET
-    #define HYPER_LT
-
-    #define HYPER_ADD
-    #define HYPER_DEL
-    #define HYPER_MOD
-
-#endif //
 }
 }

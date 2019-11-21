@@ -52,13 +52,14 @@ void EventEpoll::updateNotification(IChannel* channel) {
 
 int32 EventEpoll::update(int32 op, IChannel *channel) {
     struct epoll_event ev;
-    ev.events = HYPER_LT;
+    // EPOLLHUP | EPOLLERR | EPOLLRDHUP
+    ev.events = HYPER_ET;
     ev.data.ptr = nullptr;
     do {
         if (op == HYPER_OP_DEL) {
             break;
         }
-        ev.events = HYPER_ET;
+        ev.events |= HYPER_HUP | HYPER_ERR | HYPER_RDHUP;
         auto events = channel->getEvents();
         if(events & HYPER_READ) {
             ev.events |= HYPER_READ;

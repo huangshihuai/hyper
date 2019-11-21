@@ -75,8 +75,17 @@ inline void Channel::onClose(int32 errCode) {
 
 void Channel::onEvents() {
     auto event = getEvents();
+    std::cout << std::hex << (int)(HYPER_HUP) << "\t" << std::hex << (int)HYPER_ERR << std::endl;
+    std::cout << "event: " << std::hex << (int)event << std::endl;
     int32 errCode = 0;
-    if (event & HYPER_READ) {
+    // EPOLLHUP | EPOLLERR
+    if (event & HYPER_HUP) {
+        errCode = -1;
+        std::cout << "HYPER_HUP\n";
+    } else if (event & HYPER_ERR) {
+        errCode = -1;
+        std::cout << "HYPER_ERR\n";
+    } else if (event & HYPER_READ) {
         // Read
         errCode = onRead();
         // protocol
@@ -85,8 +94,8 @@ void Channel::onEvents() {
         errCode = onWrite();
     } else {
         // error
-        errCode = -1;
-        std::cout << "Connection::onEvents error," << errno << ",events:" << event << std::endl;
+        errCode = errno;
+        std::cout << "Connection::onEvents error," << errCode << ",events:" << event << std::endl;
     }
     onClose(errCode);
     std::cout << std::flush;

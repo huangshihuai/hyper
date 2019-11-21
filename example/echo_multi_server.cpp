@@ -24,10 +24,7 @@ public:
         responseMessage->msg = "{\"name\":\"backend\",\"age\":"  + std::to_string(index) + "}";
         m_index.fetch_add(1, std::memory_order_release);
     }
-
-    void onRequest(const std::string &request, std::string &response) override {
-    }
-
+    
     void onClose() {
         std::cout << "close\n";
     }

@@ -105,14 +105,6 @@ namespace net {
                 close(fd);
             }
         }
-        /*
-        close(0);
-        close(1);
-        close(2);
-        auto tfd = open("/dev/null", O_RDWR);
-        dup(tfd);
-        dup(tfd);
-        */
     }
 }
 }

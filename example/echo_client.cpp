@@ -13,7 +13,7 @@
 #include <cstring>
 
 using namespace hyper::net;
-#define MAX_THREAD 10
+#define MAX_THREAD 1
 
 int doWrite(std::shared_ptr<ISocket> socket, std::string responseData) {
     size_t size = 0;
@@ -70,6 +70,8 @@ void testMessage() {
                 "create socket failed");
     HYPER_COMPARE(socket->connect(), true, !=, return,
                 "connect failed");
+    socket->close();
+    return;
     std::string write = "{\"name\":\"client\",\"age\":";
     int32 index = 1;
     do {
@@ -79,6 +81,7 @@ void testMessage() {
         if (SOCKET_CLOSE == doWrite(socket, buf)) {
             break;
         }
+        std::this_thread::sleep_for(std::chrono::seconds(1));
         if (SOCKET_CLOSE == doRead(socket)) {
             break;
         }

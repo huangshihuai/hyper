@@ -25,12 +25,9 @@ public:
         m_index.fetch_add(1, std::memory_order_release);
     }
 
-    void onRequest(const std::string &request, std::string &response) override {
+    void onClose() {
     }
 
-    void onClose() {
-        std::cout << "close\n";
-    }
 private:
     std::atomic_int64_t m_index;
 };
