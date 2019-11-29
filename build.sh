@@ -1,7 +1,7 @@
 #!/bin/sh
 
 root=`cd $(dirname $0); pwd -P`
-build_dir="$root/.build"
+build_dir="$root/build"
 
 cmd=$1
 clear()

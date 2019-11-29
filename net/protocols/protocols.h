@@ -17,7 +17,6 @@ struct RegisterProtocols {
     std::function<ProtocolStateType (std::string &requestBuf, hyper::interface::Message *request)> unserialization;
     std::function<hyper::interface::Message *()> createMessage;
     std::function<void (hyper::interface::Message*)> destroyMessage;
-    std::function<int32
 };
 
 extern RegisterProtocols registerProtocols[];

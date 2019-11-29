@@ -32,7 +32,7 @@
 *.app
 
 # Hyper Module
-.build
+build
 
 # Ide Module
 .vscode/
