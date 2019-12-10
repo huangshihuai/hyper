@@ -1,4 +1,5 @@
 #pragma once
+#include <queue>
 #include "net/common/io_bucket.h"
 
 namespace hyper {
@@ -7,12 +8,10 @@ namespace common {
 
 class IOBuffer {
 public:
-    
+    explicit IOBuffer();
+    ~IOBuffer();
 private:
-    IOBucket *m_head;
-    IOBucket *m_tail;
-    IOBucket *m_writePos;
-    IOBucket *m_readPos;
+    IOBucket m_bucket;
 };
 
 }
