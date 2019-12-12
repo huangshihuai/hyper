@@ -3,11 +3,21 @@
 namespace hyper {
 namespace net {
 namespace common {
-IOBucket::IOBucket() : m_capacity(0) , m_readerIndex(0)
-                        , m_writerIndex(0), m_data(nullptr) {
+    
+inline uint32  alignmentSize(uint32 size) {
+    return IO_BUCKET_ALIGN_SIZE + size - size % IO_BUCKET_ALIGN_SIZE;
 }
-IOBucket::IOBucket(char *data_in, uint32 data_capacity) : m_capacity(data_capacity) , m_readerIndex(0)
-                        , m_writerIndex(0), m_data(data_in) {
+
+IOBucket* createIOBucket(uint32 size) {
+    uint32 alignSize = alignmentSize(size + sizeof(IOBucket));
+    char *buf = (char*)malloc(alignSize * sizeof(char));
+    IOBucket* bucket = (IOBucket*)(buf);
+    bucket->writerIndex = 0;
+    bucket->readerIndex = 0;
+    bucket->capacity = alignSize - sizeof(IOBucket);
+    bucket->data = buf + sizeof(IOBucket);
+    bucket->data = nullptr;
+    return bucket;
 }
 
 

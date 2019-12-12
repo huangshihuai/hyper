@@ -9,7 +9,7 @@ namespace net {
 namespace common {
 
 /* memory alignment */
-#define IO_BUCKET_ALIGN_SIZE 8192
+#define IO_BUCKET_ALIGN_SIZE 2048
 
 /*
 +-------------------+------------------+------------------------+
@@ -21,24 +21,25 @@ namespace common {
 */
 // memory alignment //
 struct IOBucket {
-    IOBucket();
-    IOBucket(char *data_in, uint32 data_capacity);
-    int32 peek(uint8 *buf, int32 len);
-    char *write() { return (m_data + m_writerIndex); };
-    uint32 getWriteSpace() const { return m_capacity - m_writerIndex; };
-    char *read() { return (m_data + m_readerIndex); };
-    uint32 getReadSpace() const { return m_writerIndex - m_readerIndex; };
-    bool isFull() const { return m_capacity == m_readerIndex; };
-    void clear() { m_readerIndex = m_writerIndex = 0; };
+    uint32 peek(uint8 *buf, int32 len);
+    char *write() { return (data + writerIndex); };
+    uint32 getWriteSpace() const { return capacity - writerIndex; };
+    char *read() { return (data + readerIndex); };
+    uint32 getReadSpace() const { return writerIndex - readerIndex; };
+    bool isFull() const { return capacity == readerIndex; };
+    void clear() { readerIndex = writerIndex = 0; };
     std::string toString() const;
     void discardReadBytes();
     uint32 getRelayWriteSpace();
-    uint32 m_capacity;
-    uint32 m_readerIndex;
-    uint32 m_writerIndex;
-    char *m_data;
+    uint32 capacity;
+    uint32 readerIndex;
+    uint32 writerIndex;
+    IOBucket *next;
+    char *data;
 };
 
+inline uint32  alignmentSize(uint32 size);
+IOBucket* createIOBucket(uint32 size);
 
 
 }

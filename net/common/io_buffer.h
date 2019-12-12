@@ -11,7 +11,8 @@ public:
     explicit IOBuffer();
     ~IOBuffer();
 private:
-    IOBucket m_bucket;
+    IOBucket* m_readBucket;
+    IOBucket* m_writeBucket;
 };
 
 }
