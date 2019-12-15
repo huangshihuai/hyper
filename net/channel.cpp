@@ -19,28 +19,19 @@ void Channel::disConnection() {
     this->m_socket = nullptr;
 }
 
-void Channel::addResponseData(const std::string &onResponseData) {
-    m_wirteBuf += onResponseData;
-}
-
 int32 Channel::onRead() {
-    std::string data;
-    std::string responseStr;
-    int32 size = m_socket->read(data);
+    int32 size = m_socket->read(m_readBuf);
     if (size != -1) {
         auto protocol = hyper::net::protocols::registerProtocols[m_protocolType];
         auto request = protocol.createMessage();
-        protocol.unserialization(data, request);
+        protocol.unserialization(m_readBuf, request);
         auto response = protocol.createMessage();
         m_connection->onRequest(request, response);
-        protocol.serialization(responseStr, response);
+        protocol.serialization(m_wirteBuf, response);
         protocol.destroyMessage(request);
         protocol.destroyMessage(response);
     }
-    if (!responseStr.empty()) {
-        m_wirteBuf = responseStr;
-        this->setEvents(HYPER_WRITE);
-    }
+    this->setEvents(HYPER_WRITE | HYPER_READ);
     return size;
 }
 

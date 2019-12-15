@@ -2,7 +2,6 @@
 #include <memory>
 #include <cstring>
 #include "net/options.h"
-//#include "net/connection.h"
 #include "interface/i_connection.h"
 #include "net/net_server.h"
 #include "net/protocols/im.h"

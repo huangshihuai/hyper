@@ -10,6 +10,7 @@ enum ProtocolTypes{
 
 enum ProtocolStateType {
     SUCCESS,
+    NOT_FOUND,
     AGAIN,
     FAILE,
 };

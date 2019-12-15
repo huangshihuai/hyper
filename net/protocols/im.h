@@ -30,7 +30,8 @@ public:
     ProtocolStateType static serialization(std::string &responseBuf, hyper::interface::Message *response);
     ProtocolStateType static unserialization(std::string &requestBuf, hyper::interface::Message *request);
     ImMessage static *createMessage();
-    static void destroyMessage(hyper::interface::Message *);
+    static void destroyMessage(hyper::interface::Message*);
+    ProtocolStateType static executeParsingProtocol(hyper::interface::Message*);
 };
 }
 }

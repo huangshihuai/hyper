@@ -7,6 +7,7 @@
 #include "interface/i_socket.h"
 #include "interface/i_channel.h"
 #include "interface/i_connection.h"
+#include "net/common/io_buffer.h"
 
 namespace hyper {
 namespace net {
@@ -24,7 +25,6 @@ public:
     inline std::shared_ptr<IEventLoop> getEventLoop() override { return m_eventLoop; };
     inline void setConnection(std::shared_ptr<IConnection> connection) override { m_connection = connection; };
     void disConnection() override;
-    void addResponseData(const std::string &onResponseData) override;
     inline void setSocket(std::shared_ptr<ISocket> socket) override { m_socket  = socket; };
     inline void setProtocol(ProtocolTypes protocolType) { m_protocolType = protocolType; };
 private:
@@ -36,8 +36,10 @@ private:
     std::shared_ptr<IEventLoop> m_eventLoop;
     std::shared_ptr<IConnection> m_connection;
     std::shared_ptr<ISocket> m_socket;
-    std::string m_wirteBuf;
+    // std::string m_wirteBuf;
     ProtocolTypes m_protocolType;
+    net::common::IOBuffer m_readBuf;
+    net::common::IOBuffer m_wirteBuf;
 };
 }
 }

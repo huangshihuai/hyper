@@ -35,7 +35,6 @@ public:
     void setEventLoop(std::shared_ptr<IEventLoop> eventLoop) override { m_eventLoop = eventLoop; };
     std::shared_ptr<IEventLoop> getEventLoop() override { return m_eventLoop; };
     void disConnection() override { };
-    void addResponseData(const std::string &onResponseData) override { };
     inline void setConnection(std::shared_ptr<IConnection> connection) override { };
     inline void setSocket(std::shared_ptr<ISocket> socket) override { m_socket  = socket; };
     inline void setProtocol(ProtocolTypes protocolType) { m_protocolType = protocolType; };

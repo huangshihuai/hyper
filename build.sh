@@ -54,6 +54,8 @@ elif [ "$cmd" = "build" ]; then
     rebuild
 elif [ "$cmd" = "remake" ]; then
     _remake
+elif [ "$cmd" == "test" ]; then
+    _test
 else
     echo "cmd in clear or build"
 fi

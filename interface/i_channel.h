@@ -25,7 +25,6 @@ public:
     virtual std::shared_ptr<IEventLoop> getEventLoop() = 0;
     virtual void setConnection(std::shared_ptr<IConnection> connection) = 0;
     virtual void disConnection() = 0;
-    virtual void addResponseData(const std::string &onResponseData) = 0;
     virtual void setSocket(std::shared_ptr<ISocket>) = 0;
 };
 }

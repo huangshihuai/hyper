@@ -18,6 +18,10 @@ void Im::destroyMessage(hyper::interface::Message *message) {
     }
 }
 
+ProtocolStateType Im::executeParsingProtocol(hyper::interface::Message*) {
+    // 
+}
+
 ProtocolStateType Im::serialization(std::string &responseBuf, hyper::interface::Message *response) {
     ImMessage *imMessage = dynamic_cast<ImMessage *>(response);
     ImHead imHead;
