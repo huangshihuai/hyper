@@ -37,6 +37,7 @@ bool Socket::create() {
     }
     
     auto afInet = m_socketOption->getSocketDomain();
+    // AF_INET, AF_INET6, AF_UNSPEC
     // m_socketFd = ::socket(afInet, m_socketOption->getSocketType() | SOCK_CLOEXEC | SOCK_NONBLOCK, IPPROTO_TCP);
     m_socketFd = ::socket(afInet, type, IPPROTO_TCP);
     if (m_socketFd < 0) {
